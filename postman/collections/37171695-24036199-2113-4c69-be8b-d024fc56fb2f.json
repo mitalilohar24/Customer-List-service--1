@@ -239,9 +239,9 @@
 					}
 				},
 				"url": {
-					"raw": "{{base-url}}/customer-list/v1/account-list/account-lists-count-guids",
+					"raw": "{{base-url}}}/customer-list/v1/account-list/account-lists-count-guids",
 					"host": [
-						"{{base-url}}"
+						"{{base-url}}}"
 					],
 					"path": [
 						"customer-list",
