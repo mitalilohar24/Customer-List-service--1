@@ -1,0 +1,447 @@
+{
+	"info": {
+		"_postman_id": "37171695-88120f57-8b86-427f-bedb-c6a358111bf3",
+		"name": "Lead List",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "lead-lists",
+			"id": "37171695-2b533326-6e5c-4c6c-8219-bd26052dea59",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "https://qc3-apigateway.smarte.pro/customer-list/v1/lead-list/lead-lists",
+					"protocol": "https",
+					"host": [
+						"qc3-apigateway",
+						"smarte",
+						"pro"
+					],
+					"path": [
+						"customer-list",
+						"v1",
+						"lead-list",
+						"lead-lists"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "retrieve-image-url",
+			"id": "37171695-11ddc251-39e2-471a-a40d-d1a8f8a41e26",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "https://qc3-apigateway.smarte.pro/customer-list/v1/lead-list/retrieve-image-url",
+					"protocol": "https",
+					"host": [
+						"qc3-apigateway",
+						"smarte",
+						"pro"
+					],
+					"path": [
+						"customer-list",
+						"v1",
+						"lead-list",
+						"retrieve-image-url"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "lead-list-create",
+			"id": "37171695-58f46055-6a7b-4c80-8348-8156f2bb62be",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"data\": {\r\n        \"listName\": \"S65\"\r\n    }\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/customer-list/v1/lead-list/lead-list-create",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"customer-list",
+						"v1",
+						"lead-list",
+						"lead-list-create"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "lead-list-shared-users",
+			"id": "37171695-0a8ed787-db0a-41a3-a8f4-68e2fe9e47a6",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "https://qc3-apigateway.smarte.pro/customer-list/v1/lead-list/lead-list-shared-users",
+					"protocol": "https",
+					"host": [
+						"qc3-apigateway",
+						"smarte",
+						"pro"
+					],
+					"path": [
+						"customer-list",
+						"v1",
+						"lead-list",
+						"lead-list-shared-users"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "New Request",
+			"id": "37171695-e6739b85-6c98-4797-b5cf-ae299e14707e",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://qc3-apigateway.smarte.pro/customer-list/v1/lead-list/share-list-save",
+					"protocol": "https",
+					"host": [
+						"qc3-apigateway",
+						"smarte",
+						"pro"
+					],
+					"path": [
+						"customer-list",
+						"v1",
+						"lead-list",
+						"share-list-save"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "New Request",
+			"id": "37171695-37e88d5e-178b-41af-8824-c76b8e69244e",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://qc3-apigateway.smarte.pro/customer-list/v1/account-list/account-upload-temp",
+					"protocol": "https",
+					"host": [
+						"qc3-apigateway",
+						"smarte",
+						"pro"
+					],
+					"path": [
+						"customer-list",
+						"v1",
+						"account-list",
+						"account-upload-temp"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "New Request",
+			"id": "37171695-132820ba-b34d-48ff-aab9-7ae275c64908",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://qc3-apigateway.smarte.pro/customer-list/v1/lead-list/validate-lead-name",
+					"protocol": "https",
+					"host": [
+						"qc3-apigateway",
+						"smarte",
+						"pro"
+					],
+					"path": [
+						"customer-list",
+						"v1",
+						"lead-list",
+						"validate-lead-name"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "New Request",
+			"id": "37171695-4f1351a2-ae60-4f7a-aa6d-ab94a61576bf",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://qc3-apigateway.smarte.pro/customer-list/v1/lead-list/lead-upload",
+					"protocol": "https",
+					"host": [
+						"qc3-apigateway",
+						"smarte",
+						"pro"
+					],
+					"path": [
+						"customer-list",
+						"v1",
+						"lead-list",
+						"lead-upload"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "New Request",
+			"id": "37171695-d62c6bd1-69d5-4730-a5a8-400f881ad7b8",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://qc3-apigateway.smarte.pro/customer-list/v1/lead-list/create-copy",
+					"protocol": "https",
+					"host": [
+						"qc3-apigateway",
+						"smarte",
+						"pro"
+					],
+					"path": [
+						"customer-list",
+						"v1",
+						"lead-list",
+						"create-copy"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "New Request",
+			"id": "37171695-fe7553b8-4ff2-4e00-a5b6-53dc26f88f91",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://qc3-apigateway.smarte.pro/customer-list/v1/lead-list/lead-list-update",
+					"protocol": "https",
+					"host": [
+						"qc3-apigateway",
+						"smarte",
+						"pro"
+					],
+					"path": [
+						"customer-list",
+						"v1",
+						"lead-list",
+						"lead-list-update"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "New Request",
+			"id": "37171695-ac5e1968-6b4e-4f70-8939-bf526c484fb8",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://qc3-apigateway.smarte.pro/customer-list/v1/lead-list/lead-list-delete",
+					"protocol": "https",
+					"host": [
+						"qc3-apigateway",
+						"smarte",
+						"pro"
+					],
+					"path": [
+						"customer-list",
+						"v1",
+						"lead-list",
+						"lead-list-delete"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "New Request",
+			"id": "37171695-7a9d86cb-fbc8-4d00-9feb-744f0f60100d",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://qc3-apigateway.smarte.pro/customer-list/v2/reveal/contact-revealed-guid",
+					"protocol": "https",
+					"host": [
+						"qc3-apigateway",
+						"smarte",
+						"pro"
+					],
+					"path": [
+						"customer-list",
+						"v2",
+						"reveal",
+						"contact-revealed-guid"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "New Request",
+			"id": "37171695-d05b8245-2262-4440-9fb8-e78dab75dc5a",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://qc3-apigateway.smarte.pro/customer-list/v1/lead-list/lead-list-by-id",
+					"protocol": "https",
+					"host": [
+						"qc3-apigateway",
+						"smarte",
+						"pro"
+					],
+					"path": [
+						"customer-list",
+						"v1",
+						"lead-list",
+						"lead-list-by-id"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "New Request",
+			"id": "37171695-0febc90d-5dbd-40df-bc17-3d07dd5fecb5",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://qc3-apigateway.smarte.pro/customer-list/v1/lead-list/lead-list-details",
+					"protocol": "https",
+					"host": [
+						"qc3-apigateway",
+						"smarte",
+						"pro"
+					],
+					"path": [
+						"customer-list",
+						"v1",
+						"lead-list",
+						"lead-list-details"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "New Request",
+			"id": "37171695-cc369619-1530-4990-a185-7081855ddd84",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://qc3-apigateway.smarte.pro/customer-list/v1/lead-list/lead-details-count",
+					"protocol": "https",
+					"host": [
+						"qc3-apigateway",
+						"smarte",
+						"pro"
+					],
+					"path": [
+						"customer-list",
+						"v1",
+						"lead-list",
+						"lead-details-count"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "New Request",
+			"id": "37171695-8fdd86ed-668c-4032-ba0c-f79f7d3ccbc9",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://qc3-apigateway.smarte.pro/customer-list/v1/lead-list/lead-delete",
+					"protocol": "https",
+					"host": [
+						"qc3-apigateway",
+						"smarte",
+						"pro"
+					],
+					"path": [
+						"customer-list",
+						"v1",
+						"lead-list",
+						"lead-delete"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
