@@ -1,0 +1,90 @@
+{
+	"info": {
+		"_postman_id": "37171695-5a421f20-9d8c-4fc9-aaec-84cf3274146e",
+		"name": "Dashboard",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "contact-revealed",
+			"id": "37171695-01a23039-97ab-4a2d-8206-61c707e4ee4e",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "https://qc3-apigateway.smarte.pro/customer-list/v2/reveal/contact-revealed",
+					"protocol": "https",
+					"host": [
+						"qc3-apigateway",
+						"smarte",
+						"pro"
+					],
+					"path": [
+						"customer-list",
+						"v2",
+						"reveal",
+						"contact-revealed"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "contact-reveal-list",
+			"id": "37171695-5f2ab305-bf6c-4b58-859c-1064edf33828",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "https://qc3-apigateway.smarte.pro/customer-list/v1/reveal/contact-reveal-list",
+					"protocol": "https",
+					"host": [
+						"qc3-apigateway",
+						"smarte",
+						"pro"
+					],
+					"path": [
+						"customer-list",
+						"v1",
+						"reveal",
+						"contact-reveal-list"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "account-list-dashboard",
+			"id": "37171695-82a6e493-1c34-440b-81eb-43f922d06e36",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "https://qc3-apigateway.smarte.pro/customer-list/v1/account-list/account-list-dashboard",
+					"protocol": "https",
+					"host": [
+						"qc3-apigateway",
+						"smarte",
+						"pro"
+					],
+					"path": [
+						"customer-list",
+						"v1",
+						"account-list",
+						"account-list-dashboard"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
