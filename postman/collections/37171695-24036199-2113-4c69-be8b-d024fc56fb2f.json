@@ -1,0 +1,4302 @@
+{
+	"info": {
+		"_postman_id": "37171695-24036199-2113-4c69-be8b-d024fc56fb2f",
+		"name": "Account List",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "auth/sign-in",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "71243d66-b5f5-46c3-bfbd-198af7a03dbd",
+						"exec": [
+							"// Extract the authorization token from the response header",
+							"var authToken = pm.response.headers.get('Authorization');",
+							"",
+							"// Check if the token exists and set it as an environment variable",
+							"if (authToken) {",
+							"    pm.environment.set(\"auth_token\", authToken);",
+							"} else {",
+							"    pm.environment.unset(\"auth_token\");",
+							"}",
+							"// Negative Tests (Ensure Expected Errors are Handled Properly)",
+							"",
+							"// Unauthorized Access (403)",
+							"pm.test(\"Unauthorized access should return 403 with correct message\", function () {",
+							"    if (pm.response.code === 403) {",
+							"        var jsonData = pm.response.json();",
+							"        pm.expect(jsonData).to.have.property(\"message\");",
+							"        pm.expect(jsonData.message).to.include(\"not authorized\");",
+							"    }",
+							"});",
+							"",
+							"// Invalid Authentication (401)",
+							"pm.test(\"Invalid authentication should return 401\", function () {",
+							"    if (pm.response.code === 401) {",
+							"        pm.expect(pm.response.code).to.equal(401);",
+							"    }",
+							"});",
+							"",
+							"// Missing Required Fields (400)",
+							"pm.test(\"Missing required fields should return 400 with correct message\", function () {",
+							"    if (pm.response.code === 400) {",
+							"        var jsonData = pm.response.json();",
+							"        pm.expect(jsonData).to.have.property(\"message\");",
+							"        pm.expect(jsonData.message).to.include(\"missing required\");",
+							"    }",
+							"});",
+							"",
+							"// Invalid Data Format (400)",
+							"pm.test(\"Invalid data format should return 400 with appropriate message\", function () {",
+							"    if (pm.response.code === 400) {",
+							"        var jsonData = pm.response.json();",
+							"        pm.expect(jsonData).to.have.property(\"message\");",
+							"        pm.expect(jsonData.message).to.include(\"Invalid format\");",
+							"    }",
+							"});",
+							"",
+							"// Non-existent Resource (404)",
+							"pm.test(\"Non-existent resource should return 404 with correct message\", function () {",
+							"    if (pm.response.code === 404) {",
+							"        var jsonData = pm.response.json();",
+							"        pm.expect(jsonData).to.have.property(\"message\");",
+							"        pm.expect(jsonData.message).to.include(\"not found\");",
+							"    }",
+							"});",
+							"",
+							"// Server Error (500)",
+							"pm.test(\"Server error should return 500 with appropriate message\", function () {",
+							"    if (pm.response.code === 500) {",
+							"        var jsonData = pm.response.json();",
+							"        pm.expect(jsonData).to.have.property(\"message\");",
+							"        pm.expect(jsonData.message).to.include(\"internal server error\");",
+							"    }",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"id": "37171695-fbf90114-715e-46e3-b552-8106700af408",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{auth-token}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"data\": {\r\n        \"userName\": \"temij32999@marchub.com\",\r\n        \"password\": \"Lohar@123456\"\r\n    },\r\n    \"type\": \"SMARTE\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base-url}}/authentication/v1/auth/sign-in",
+					"host": [
+						"{{base-url}}"
+					],
+					"path": [
+						"authentication",
+						"v1",
+						"auth",
+						"sign-in"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "account-lists-count-guids",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "014a03da-6167-4324-baca-f96e677994fc",
+						"exec": [
+							"pm.test(\"Response time is within 50ms\", function () {\r",
+							"    pm.expect(pm.response.responseTime).to.be.below(50); // Ensuring it is below 190ms\r",
+							"});\r",
+							"// Check if the response status code is 200\r",
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"// Check if response body is in JSON format\r",
+							"pm.test(\"Response body is valid JSON\", function () {\r",
+							"    pm.response.to.be.json;\r",
+							"});\r",
+							"\r",
+							"// Parse response body\r",
+							"var jsonData = pm.response.json();\r",
+							"\r",
+							"// Validate the structure of the response\r",
+							"pm.test(\"Verify response structure\", function () {\r",
+							"    pm.expect(jsonData).to.have.property(\"status\");\r",
+							"    pm.expect(jsonData.status).to.have.property(\"statusCode\", 200);\r",
+							"    pm.expect(jsonData.status).to.have.property(\"requestId\").that.is.a(\"string\").and.not.empty;\r",
+							"    pm.expect(jsonData.status).to.have.property(\"message\", \"Success\");\r",
+							"});\r",
+							"\r",
+							"// Validate that the response contains a data object (if applicable)\r",
+							"pm.test(\"Verify data object exists\", function () {\r",
+							"    pm.expect(jsonData).to.have.property(\"data\");\r",
+							"});\r",
+							"// Negative Tests (Ensure Expected Errors are Handled Properly)\r",
+							"\r",
+							"// Unauthorized Access (403)\r",
+							"pm.test(\"Unauthorized access should return 403 with correct message\", function () {\r",
+							"    if (pm.response.code === 403) {\r",
+							"        var jsonData = pm.response.json();\r",
+							"        pm.expect(jsonData).to.have.property(\"message\");\r",
+							"        pm.expect(jsonData.message).to.include(\"not authorized\");\r",
+							"    }\r",
+							"});\r",
+							"\r",
+							"// Invalid Authentication (401)\r",
+							"pm.test(\"Invalid authentication should return 401\", function () {\r",
+							"    if (pm.response.code === 401) {\r",
+							"        pm.expect(pm.response.code).to.equal(401);\r",
+							"    }\r",
+							"});\r",
+							"\r",
+							"// Missing Required Fields (400)\r",
+							"pm.test(\"Missing required fields should return 400 with correct message\", function () {\r",
+							"    if (pm.response.code === 400) {\r",
+							"        var jsonData = pm.response.json();\r",
+							"        pm.expect(jsonData).to.have.property(\"message\");\r",
+							"        pm.expect(jsonData.message).to.include(\"missing required\");\r",
+							"    }\r",
+							"});\r",
+							"\r",
+							"// Invalid Data Format (400)\r",
+							"pm.test(\"Invalid data format should return 400 with appropriate message\", function () {\r",
+							"    if (pm.response.code === 400) {\r",
+							"        var jsonData = pm.response.json();\r",
+							"        pm.expect(jsonData).to.have.property(\"message\");\r",
+							"        pm.expect(jsonData.message).to.include(\"Invalid format\");\r",
+							"    }\r",
+							"});\r",
+							"\r",
+							"// Non-existent Resource (404)\r",
+							"pm.test(\"Non-existent resource should return 404 with correct message\", function () {\r",
+							"    if (pm.response.code === 404) {\r",
+							"        var jsonData = pm.response.json();\r",
+							"        pm.expect(jsonData).to.have.property(\"message\");\r",
+							"        pm.expect(jsonData.message).to.include(\"not found\");\r",
+							"    }\r",
+							"});\r",
+							"\r",
+							"// Server Error (500)\r",
+							"pm.test(\"Server error should return 500 with appropriate message\", function () {\r",
+							"    if (pm.response.code === 500) {\r",
+							"        var jsonData = pm.response.json();\r",
+							"        pm.expect(jsonData).to.have.property(\"message\");\r",
+							"        pm.expect(jsonData.message).to.include(\"internal server error\");\r",
+							"    }\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"id": "37171695-a3be0ddb-0dc1-46e1-904c-6c99504c66c7",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{Authorization}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base-url}}/customer-list/v1/account-list/account-lists-count-guids",
+					"host": [
+						"{{base-url}}"
+					],
+					"path": [
+						"customer-list",
+						"v1",
+						"account-list",
+						"account-lists-count-guids"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "account-list",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "1b6cc720-b8d2-4349-b3a8-0abb6e2ab177",
+						"exec": [
+							"pm.test(\"Response time is within 50ms\", function () {",
+							"    pm.expect(pm.response.responseTime).to.be.below(50); // Ensuring it is below 190ms",
+							"});",
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"Response body is valid JSON\", function () {",
+							"    pm.response.to.be.json;",
+							"});",
+							"",
+							"pm.test(\"Verify status object exists\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData).to.have.property(\"status\");",
+							"    pm.expect(jsonData.status).to.have.property(\"statusCode\", 200);",
+							"    pm.expect(jsonData.status).to.have.property(\"requestId\");",
+							"    pm.expect(jsonData.status.requestId).to.be.a(\"string\").and.not.empty;",
+							"    pm.expect(jsonData.status).to.have.property(\"message\", \"Success\");",
+							"});",
+							"",
+							"pm.test(\"Verify data object exists and contains expected values\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData).to.have.property(\"data\");",
+							"    pm.expect(jsonData.data).to.have.property(\"accountLists\").that.is.an(\"array\").with.lengthOf(1);",
+							"    ",
+							"    let account = jsonData.data.accountLists[0];",
+							"    pm.expect(account).to.have.property(\"id\", 17);",
+							"    pm.expect(account).to.have.property(\"listName\", \"newjaved\");",
+							"    pm.expect(account).to.have.property(\"createdAt\", \"2025-03-07T05:11:22Z\");",
+							"    pm.expect(account).to.have.property(\"updatedBy\", 26);",
+							"    pm.expect(account).to.have.property(\"updatedAt\", \"2025-03-07T05:11:22Z\");",
+							"    pm.expect(account).to.have.property(\"isPublic\", false);",
+							"    pm.expect(account).to.have.property(\"status\", \"active\");",
+							"    pm.expect(account).to.have.property(\"userId\", 26);",
+							"",
+							"    // Verify accountShares array",
+							"    pm.expect(account).to.have.property(\"accountShares\").that.is.an(\"array\").with.lengthOf(1);",
+							"    let share = account.accountShares[0];",
+							"    pm.expect(share).to.have.property(\"id\", 3);",
+							"    pm.expect(share).to.have.property(\"userId\", 109);",
+							"    pm.expect(share).to.have.property(\"createdAt\", \"2025-03-07T05:38:40Z\");",
+							"    pm.expect(share).to.have.property(\"sharedBy\", 26);",
+							"    pm.expect(share).to.have.property(\"privileges\", \"[\\\"read\\\", \\\"write\\\"]\");",
+							"    pm.expect(share).to.have.property(\"revoked\", false);",
+							"});",
+							"",
+							"pm.test(\"Verify pagination values\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.data).to.have.property(\"currentPage\", 1);",
+							"    pm.expect(jsonData.data).to.have.property(\"total\", 1);",
+							"    pm.expect(jsonData.data).to.have.property(\"totalPages\", 1);",
+							"});",
+							"",
+							"",
+							"// Negative Tests (Ensure Expected Errors are Handled Properly)",
+							"",
+							"// Unauthorized Access (403)",
+							"pm.test(\"Unauthorized access should return 403 with correct message\", function () {",
+							"    if (pm.response.code === 403) {",
+							"        var jsonData = pm.response.json();",
+							"        pm.expect(jsonData).to.have.property(\"message\");",
+							"        pm.expect(jsonData.message).to.include(\"not authorized\");",
+							"    }",
+							"});",
+							"",
+							"// Invalid Authentication (401)",
+							"pm.test(\"Invalid authentication should return 401\", function () {",
+							"    if (pm.response.code === 401) {",
+							"        pm.expect(pm.response.code).to.equal(401);",
+							"    }",
+							"});",
+							"",
+							"// Missing Required Fields (400)",
+							"pm.test(\"Missing required fields should return 400 with correct message\", function () {",
+							"    if (pm.response.code === 400) {",
+							"        var jsonData = pm.response.json();",
+							"        pm.expect(jsonData).to.have.property(\"message\");",
+							"        pm.expect(jsonData.message).to.include(\"missing required\");",
+							"    }",
+							"});",
+							"",
+							"// Invalid Data Format (400)",
+							"pm.test(\"Invalid data format should return 400 with appropriate message\", function () {",
+							"    if (pm.response.code === 400) {",
+							"        var jsonData = pm.response.json();",
+							"        pm.expect(jsonData).to.have.property(\"message\");",
+							"        pm.expect(jsonData.message).to.include(\"Invalid format\");",
+							"    }",
+							"});",
+							"",
+							"// Non-existent Resource (404)",
+							"pm.test(\"Non-existent resource should return 404 with correct message\", function () {",
+							"    if (pm.response.code === 404) {",
+							"        var jsonData = pm.response.json();",
+							"        pm.expect(jsonData).to.have.property(\"message\");",
+							"        pm.expect(jsonData.message).to.include(\"not found\");",
+							"    }",
+							"});",
+							"",
+							"// Server Error (500)",
+							"pm.test(\"Server error should return 500 with appropriate message\", function () {",
+							"    if (pm.response.code === 500) {",
+							"        var jsonData = pm.response.json();",
+							"        pm.expect(jsonData).to.have.property(\"message\");",
+							"        pm.expect(jsonData.message).to.include(\"internal server error\");",
+							"    }",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"id": "37171695-33013970-2342-4fb4-93b0-d89498d0d35c",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{Authorization}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"data\": {\r\n        \"searchText\": \"Amazon 1\",\r\n        \"contentType\": \"SHARED\"\r\n    },\r\n    \"type\": \"DASHBOARD\",\r\n    \"pagination\": {\r\n        \"pageSize\": 10,\r\n        \"pageIndex\": 3\r\n    }\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base-url}}/customer-list/v1/account-list/account-lists",
+					"host": [
+						"{{base-url}}"
+					],
+					"path": [
+						"customer-list",
+						"v1",
+						"account-list",
+						"account-lists"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "account-retrieve-image-url",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "ad4d14bd-301b-46d8-aadc-dc9a8b84c45b",
+						"exec": [
+							"pm.test(\"Response time is within 320ms\", function () {\r",
+							"    pm.expect(pm.response.responseTime).to.be.below(321); // Ensuring it is below 190ms\r",
+							"});\r",
+							"// Check if the response status code is 200\r",
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"// Check if response body is in JSON format\r",
+							"pm.test(\"Response body is valid JSON\", function () {\r",
+							"    pm.response.to.be.json;\r",
+							"});\r",
+							"\r",
+							"// Validate that the response contains a \"status\" object\r",
+							"pm.test(\"Response contains status object\", function () {\r",
+							"    var jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData).to.have.property(\"status\");\r",
+							"});\r",
+							"\r",
+							"// If the response includes a \"status\" object, check if statusCode is 200\r",
+							"pm.test(\"Verify statusCode is 200 in status object\", function () {\r",
+							"    var jsonData = pm.response.json();\r",
+							"    if (jsonData.status) {\r",
+							"        pm.expect(jsonData.status).to.have.property(\"statusCode\", 200);\r",
+							"    }\r",
+							"});\r",
+							"// Negative Tests (Ensure Expected Errors are Handled Properly)\r",
+							"\r",
+							"// Unauthorized Access (403)\r",
+							"pm.test(\"Unauthorized access should return 403 with correct message\", function () {\r",
+							"    if (pm.response.code === 403) {\r",
+							"        var jsonData = pm.response.json();\r",
+							"        pm.expect(jsonData).to.have.property(\"message\");\r",
+							"        pm.expect(jsonData.message).to.include(\"not authorized\");\r",
+							"    }\r",
+							"});\r",
+							"\r",
+							"// Invalid Authentication (401)\r",
+							"pm.test(\"Invalid authentication should return 401\", function () {\r",
+							"    if (pm.response.code === 401) {\r",
+							"        pm.expect(pm.response.code).to.equal(401);\r",
+							"    }\r",
+							"});\r",
+							"\r",
+							"// Missing Required Fields (400)\r",
+							"pm.test(\"Missing required fields should return 400 with correct message\", function () {\r",
+							"    if (pm.response.code === 400) {\r",
+							"        var jsonData = pm.response.json();\r",
+							"        pm.expect(jsonData).to.have.property(\"message\");\r",
+							"        pm.expect(jsonData.message).to.include(\"missing required\");\r",
+							"    }\r",
+							"});\r",
+							"\r",
+							"// Invalid Data Format (400)\r",
+							"pm.test(\"Invalid data format should return 400 with appropriate message\", function () {\r",
+							"    if (pm.response.code === 400) {\r",
+							"        var jsonData = pm.response.json();\r",
+							"        pm.expect(jsonData).to.have.property(\"message\");\r",
+							"        pm.expect(jsonData.message).to.include(\"Invalid format\");\r",
+							"    }\r",
+							"});\r",
+							"\r",
+							"// Non-existent Resource (404)\r",
+							"pm.test(\"Non-existent resource should return 404 with correct message\", function () {\r",
+							"    if (pm.response.code === 404) {\r",
+							"        var jsonData = pm.response.json();\r",
+							"        pm.expect(jsonData).to.have.property(\"message\");\r",
+							"        pm.expect(jsonData.message).to.include(\"not found\");\r",
+							"    }\r",
+							"});\r",
+							"\r",
+							"// Server Error (500)\r",
+							"pm.test(\"Server error should return 500 with appropriate message\", function () {\r",
+							"    if (pm.response.code === 500) {\r",
+							"        var jsonData = pm.response.json();\r",
+							"        pm.expect(jsonData).to.have.property(\"message\");\r",
+							"        pm.expect(jsonData.message).to.include(\"internal server error\");\r",
+							"    }\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"id": "37171695-2f22a25f-0f59-4445-a41d-2b73eba3e226",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{Authorization}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"data\": {\r\n        \"id\": 23\r\n    }\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base-url}}/customer-list/v1/account-list/account-retrieve-image-url",
+					"host": [
+						"{{base-url}}"
+					],
+					"path": [
+						"customer-list",
+						"v1",
+						"account-list",
+						"account-retrieve-image-url"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "account-list-create",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "c0d9036c-e257-442d-b4d4-0724c9b275b3",
+						"exec": [
+							"pm.test(\"Response time is within 189ms\", function () {",
+							"    pm.expect(pm.response.responseTime).to.be.below(190); // Ensuring it is below 190ms",
+							"});",
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"Response body is valid JSON\", function () {",
+							"    pm.response.to.be.json;",
+							"});",
+							"",
+							"pm.test(\"Verify status object exists\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData).to.have.property(\"status\");",
+							"    pm.expect(jsonData.status).to.have.property(\"statusCode\", 200);",
+							"    pm.expect(jsonData.status).to.have.property(\"requestId\");",
+							"    pm.expect(jsonData.status.requestId).to.be.a(\"string\").and.not.empty;",
+							"    pm.expect(jsonData.status).to.have.property(\"message\", \"Success\");",
+							"});",
+							"// Negative Tests (Ensure Expected Errors are Handled Properly)",
+							"",
+							"// Unauthorized Access (403)",
+							"pm.test(\"Unauthorized access should return 403 with correct message\", function () {",
+							"    if (pm.response.code === 403) {",
+							"        var jsonData = pm.response.json();",
+							"        pm.expect(jsonData).to.have.property(\"message\");",
+							"        pm.expect(jsonData.message).to.include(\"not authorized\");",
+							"    }",
+							"});",
+							"",
+							"// Invalid Authentication (401)",
+							"pm.test(\"Invalid authentication should return 401\", function () {",
+							"    if (pm.response.code === 401) {",
+							"        pm.expect(pm.response.code).to.equal(401);",
+							"    }",
+							"});",
+							"",
+							"// Missing Required Fields (400)",
+							"pm.test(\"Missing required fields should return 400 with correct message\", function () {",
+							"    if (pm.response.code === 400) {",
+							"        var jsonData = pm.response.json();",
+							"        pm.expect(jsonData).to.have.property(\"message\");",
+							"        pm.expect(jsonData.message).to.include(\"missing required\");",
+							"    }",
+							"});",
+							"",
+							"// Invalid Data Format (400)",
+							"pm.test(\"Invalid data format should return 400 with appropriate message\", function () {",
+							"    if (pm.response.code === 400) {",
+							"        var jsonData = pm.response.json();",
+							"        pm.expect(jsonData).to.have.property(\"message\");",
+							"        pm.expect(jsonData.message).to.include(\"Invalid format\");",
+							"    }",
+							"});",
+							"",
+							"// Non-existent Resource (404)",
+							"pm.test(\"Non-existent resource should return 404 with correct message\", function () {",
+							"    if (pm.response.code === 404) {",
+							"        var jsonData = pm.response.json();",
+							"        pm.expect(jsonData).to.have.property(\"message\");",
+							"        pm.expect(jsonData.message).to.include(\"not found\");",
+							"    }",
+							"});",
+							"",
+							"// Server Error (500)",
+							"pm.test(\"Server error should return 500 with appropriate message\", function () {",
+							"    if (pm.response.code === 500) {",
+							"        var jsonData = pm.response.json();",
+							"        pm.expect(jsonData).to.have.property(\"message\");",
+							"        pm.expect(jsonData.message).to.include(\"internal server error\");",
+							"    }",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"id": "37171695-5bf83ad3-e7fc-4b77-bc29-566d29503ef9",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{Authorization}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"data\": {\r\n        \"listName\": \"espe\"\r\n    }\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base-url}}/customer-list/v1/account-list/account-list-create",
+					"host": [
+						"{{base-url}}"
+					],
+					"path": [
+						"customer-list",
+						"v1",
+						"account-list",
+						"account-list-create"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "create-copy",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "75169485-24bf-4785-ae50-b4526aae2984",
+						"exec": [
+							"pm.test(\"Response time is within 500ms\", function () {",
+							"    pm.expect(pm.response.responseTime).to.be.below(500); // Ensuring it is below 190ms",
+							"});",
+							"pm.test(\"Verify status object exists and contains expected values\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    ",
+							"    pm.expect(jsonData).to.have.property(\"status\");",
+							"    pm.expect(jsonData.status).to.have.property(\"statusCode\", 200);",
+							"    pm.expect(jsonData.status).to.have.property(\"requestId\").that.is.a(\"string\").and.not.empty;",
+							"    pm.expect(jsonData.status).to.have.property(\"message\", \"Success\");",
+							"});",
+							"var template = `",
+							"    <pre>{{JSON.stringify(response, null, 2)}}</pre>",
+							"`;",
+							"",
+							"function constructVisualizerPayload() {",
+							"    return {response: pm.response.json()}",
+							"}",
+							"",
+							"pm.visualizer.set(template, constructVisualizerPayload());",
+							"",
+							"// Negative Tests (Ensure Expected Errors are Handled Properly)",
+							"",
+							"// Unauthorized Access (403)",
+							"pm.test(\"Unauthorized access should return 403 with correct message\", function () {",
+							"    if (pm.response.code === 403) {",
+							"        var jsonData = pm.response.json();",
+							"        pm.expect(jsonData).to.have.property(\"message\");",
+							"        pm.expect(jsonData.message).to.include(\"not authorized\");",
+							"    }",
+							"});",
+							"",
+							"// Invalid Authentication (401)",
+							"pm.test(\"Invalid authentication should return 401\", function () {",
+							"    if (pm.response.code === 401) {",
+							"        pm.expect(pm.response.code).to.equal(401);",
+							"    }",
+							"});",
+							"",
+							"// Missing Required Fields (400)",
+							"pm.test(\"Missing required fields should return 400 with correct message\", function () {",
+							"    if (pm.response.code === 400) {",
+							"        var jsonData = pm.response.json();",
+							"        pm.expect(jsonData).to.have.property(\"message\");",
+							"        pm.expect(jsonData.message).to.include(\"missing required\");",
+							"    }",
+							"});",
+							"",
+							"// Invalid Data Format (400)",
+							"pm.test(\"Invalid data format should return 400 with appropriate message\", function () {",
+							"    if (pm.response.code === 400) {",
+							"        var jsonData = pm.response.json();",
+							"        pm.expect(jsonData).to.have.property(\"message\");",
+							"        pm.expect(jsonData.message).to.include(\"Invalid format\");",
+							"    }",
+							"});",
+							"",
+							"// Non-existent Resource (404)",
+							"pm.test(\"Non-existent resource should return 404 with correct message\", function () {",
+							"    if (pm.response.code === 404) {",
+							"        var jsonData = pm.response.json();",
+							"        pm.expect(jsonData).to.have.property(\"message\");",
+							"        pm.expect(jsonData.message).to.include(\"not found\");",
+							"    }",
+							"});",
+							"",
+							"// Server Error (500)",
+							"pm.test(\"Server error should return 500 with appropriate message\", function () {",
+							"    if (pm.response.code === 500) {",
+							"        var jsonData = pm.response.json();",
+							"        pm.expect(jsonData).to.have.property(\"message\");",
+							"        pm.expect(jsonData.message).to.include(\"internal server error\");",
+							"    }",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"id": "37171695-0e0daa57-15b3-4e29-ab02-f89205e75f12",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{auth-token}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"data\": {\r\n        \"id\": 559,\r\n        \"listName\": \"Copy of SFC\"\r\n    }\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base-url}}/customer-list/v1/account-list/create-copy",
+					"host": [
+						"{{base-url}}"
+					],
+					"path": [
+						"customer-list",
+						"v1",
+						"account-list",
+						"create-copy"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "account-list-delete",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "05eb2f81-9417-43d3-b645-138127ad0885",
+						"exec": [
+							"pm.test(\"Response time is within 190ms\", function () {",
+							"    pm.expect(pm.response.responseTime).to.be.below(190); // Ensuring it is below 190ms",
+							"});",
+							"",
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"Response body is valid JSON\", function () {",
+							"    pm.response.to.be.json;",
+							"});",
+							"",
+							"pm.test(\"Verify status object exists\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData).to.have.property(\"status\");",
+							"    pm.expect(jsonData.status).to.have.property(\"statusCode\", 200);",
+							"    pm.expect(jsonData.status).to.have.property(\"requestId\");",
+							"    pm.expect(jsonData.status.requestId).to.be.a(\"string\").and.not.empty;",
+							"    pm.expect(jsonData.status).to.have.property(\"message\", \"Success\");",
+							"});",
+							"",
+							"",
+							"// Negative Tests (Ensure Expected Errors are Handled Properly)",
+							"",
+							"// Unauthorized Access (403)",
+							"pm.test(\"Unauthorized access should return 403 with correct message\", function () {",
+							"    if (pm.response.code === 403) {",
+							"        var jsonData = pm.response.json();",
+							"        pm.expect(jsonData).to.have.property(\"message\");",
+							"        pm.expect(jsonData.message).to.include(\"not authorized\");",
+							"    }",
+							"});",
+							"",
+							"// Invalid Authentication (401)",
+							"pm.test(\"Invalid authentication should return 401\", function () {",
+							"    if (pm.response.code === 401) {",
+							"        pm.expect(pm.response.code).to.equal(401);",
+							"    }",
+							"});",
+							"",
+							"// Missing Required Fields (400)",
+							"pm.test(\"Missing required fields should return 400 with correct message\", function () {",
+							"    if (pm.response.code === 400) {",
+							"        var jsonData = pm.response.json();",
+							"        pm.expect(jsonData).to.have.property(\"message\");",
+							"        pm.expect(jsonData.message).to.include(\"missing required\");",
+							"    }",
+							"});",
+							"",
+							"// Invalid Data Format (400)",
+							"pm.test(\"Invalid data format should return 400 with appropriate message\", function () {",
+							"    if (pm.response.code === 400) {",
+							"        var jsonData = pm.response.json();",
+							"        pm.expect(jsonData).to.have.property(\"message\");",
+							"        pm.expect(jsonData.message).to.include(\"Invalid format\");",
+							"    }",
+							"});",
+							"",
+							"// Non-existent Resource (404)",
+							"pm.test(\"Non-existent resource should return 404 with correct message\", function () {",
+							"    if (pm.response.code === 404) {",
+							"        var jsonData = pm.response.json();",
+							"        pm.expect(jsonData).to.have.property(\"message\");",
+							"        pm.expect(jsonData.message).to.include(\"not found\");",
+							"    }",
+							"});",
+							"",
+							"// Server Error (500)",
+							"pm.test(\"Server error should return 500 with appropriate message\", function () {",
+							"    if (pm.response.code === 500) {",
+							"        var jsonData = pm.response.json();",
+							"        pm.expect(jsonData).to.have.property(\"message\");",
+							"        pm.expect(jsonData.message).to.include(\"internal server error\");",
+							"    }",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"id": "37171695-112e1316-ccbd-420b-9095-12f484ddf752",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{auth-token}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"data\": [\r\n        {\r\n            \"accountIds\":[\r\n             932\r\n            ]\r\n        }\r\n    ]\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base-url}}/customer-list/v1/account-list/account-list-delete",
+					"host": [
+						"{{base-url}}"
+					],
+					"path": [
+						"customer-list",
+						"v1",
+						"account-list",
+						"account-list-delete"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "account-list-shared-users",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "4c915f39-cbad-4074-a9e1-6a400a11891a",
+						"exec": [
+							"pm.test(\"Response time is within 50ms\", function () {",
+							"    pm.expect(pm.response.responseTime).to.be.below(50); // Ensuring it is below 190ms",
+							"});",
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"Response body is valid JSON\", function () {",
+							"    pm.response.to.be.json;",
+							"});",
+							"",
+							"pm.test(\"Verify status object exists\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData).to.have.property(\"status\");",
+							"    pm.expect(jsonData.status).to.have.property(\"statusCode\", 200);",
+							"    pm.expect(jsonData.status).to.have.property(\"requestId\").that.is.a(\"string\").and.not.empty;",
+							"    pm.expect(jsonData.status).to.have.property(\"message\", \"Success\");",
+							"});",
+							"",
+							"pm.test(\"Verify data object exists and contains expected values\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData).to.have.property(\"data\");",
+							"    pm.expect(jsonData.data).to.have.property(\"isPublic\", false);",
+							"",
+							"    // Check sharedUserList exists and is an array",
+							"    pm.expect(jsonData.data).to.have.property(\"sharedUserList\").that.is.an(\"array\");",
+							"",
+							"    // Validate sharedUserList items dynamically",
+							"    jsonData.data.sharedUserList.forEach(user => {",
+							"        pm.expect(user).to.have.property(\"userId\").that.is.a(\"number\");",
+							"        pm.expect(user).to.have.property(\"createdAt\").that.is.a(\"string\");",
+							"        pm.expect(user).to.have.property(\"revoked\").that.is.a(\"boolean\");",
+							"",
+							"        if (user.userId === 36) {",
+							"            pm.expect(user).to.have.property(\"id\").that.is.a(\"number\");",
+							"            pm.expect(user).to.have.property(\"sharedBy\", 26);",
+							"            pm.expect(user).to.have.property(\"privileges\", \"'[\\\"read\\\",\\\"write\\\"]'\");",
+							"        }",
+							"",
+							"        if (user.userId === 26) {",
+							"            pm.expect(user).to.have.property(\"isOwner\", true);",
+							"        }",
+							"    });",
+							"});",
+							"",
+							"",
+							"// Negative Tests (Ensure Expected Errors are Handled Properly)",
+							"",
+							"// Unauthorized Access (403)",
+							"pm.test(\"Unauthorized access should return 403 with correct message\", function () {",
+							"    if (pm.response.code === 403) {",
+							"        var jsonData = pm.response.json();",
+							"        pm.expect(jsonData).to.have.property(\"message\");",
+							"        pm.expect(jsonData.message).to.include(\"not authorized\");",
+							"    }",
+							"});",
+							"",
+							"// Invalid Authentication (401)",
+							"pm.test(\"Invalid authentication should return 401\", function () {",
+							"    if (pm.response.code === 401) {",
+							"        pm.expect(pm.response.code).to.equal(401);",
+							"    }",
+							"});",
+							"",
+							"// Missing Required Fields (400)",
+							"pm.test(\"Missing required fields should return 400 with correct message\", function () {",
+							"    if (pm.response.code === 400) {",
+							"        var jsonData = pm.response.json();",
+							"        pm.expect(jsonData).to.have.property(\"message\");",
+							"        pm.expect(jsonData.message).to.include(\"missing required\");",
+							"    }",
+							"});",
+							"",
+							"// Invalid Data Format (400)",
+							"pm.test(\"Invalid data format should return 400 with appropriate message\", function () {",
+							"    if (pm.response.code === 400) {",
+							"        var jsonData = pm.response.json();",
+							"        pm.expect(jsonData).to.have.property(\"message\");",
+							"        pm.expect(jsonData.message).to.include(\"Invalid format\");",
+							"    }",
+							"});",
+							"",
+							"// Non-existent Resource (404)",
+							"pm.test(\"Non-existent resource should return 404 with correct message\", function () {",
+							"    if (pm.response.code === 404) {",
+							"        var jsonData = pm.response.json();",
+							"        pm.expect(jsonData).to.have.property(\"message\");",
+							"        pm.expect(jsonData.message).to.include(\"not found\");",
+							"    }",
+							"});",
+							"",
+							"// Server Error (500)",
+							"pm.test(\"Server error should return 500 with appropriate message\", function () {",
+							"    if (pm.response.code === 500) {",
+							"        var jsonData = pm.response.json();",
+							"        pm.expect(jsonData).to.have.property(\"message\");",
+							"        pm.expect(jsonData.message).to.include(\"internal server error\");",
+							"    }",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"id": "37171695-21267a2a-ec39-4225-961f-ccef4c76b04f",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{auth-token}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"data\": {\r\n        \"id\": 662\r\n    }\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base-url}}/customer-list/v1/account-list/account-list-shared-users",
+					"host": [
+						"{{base-url}}"
+					],
+					"path": [
+						"customer-list",
+						"v1",
+						"account-list",
+						"account-list-shared-users"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "account-share-list-save",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "3c21646b-0f7b-449f-b4c5-4d9372dcd9d9",
+						"exec": [
+							"pm.test(\"Response time is within 50ms\", function () {",
+							"    pm.expect(pm.response.responseTime).to.be.below(50); // Ensuring it is below 190ms",
+							"});",
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"Response body is valid JSON\", function () {",
+							"    pm.response.to.be.json;",
+							"});",
+							"",
+							"pm.test(\"Verify status object exists and contains expected values\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    ",
+							"    pm.expect(jsonData).to.have.property(\"status\");",
+							"    pm.expect(jsonData.status).to.have.property(\"statusCode\", 200);",
+							"    pm.expect(jsonData.status).to.have.property(\"requestId\").that.is.a(\"string\").and.not.empty;",
+							"    pm.expect(jsonData.status).to.have.property(\"message\", \"Success\");",
+							"});",
+							"",
+							"",
+							"// Negative Tests (Ensure Expected Errors are Handled Properly)",
+							"",
+							"// Unauthorized Access (403)",
+							"pm.test(\"Unauthorized access should return 403 with correct message\", function () {",
+							"    if (pm.response.code === 403) {",
+							"        var jsonData = pm.response.json();",
+							"        pm.expect(jsonData).to.have.property(\"message\");",
+							"        pm.expect(jsonData.message).to.include(\"not authorized\");",
+							"    }",
+							"});",
+							"",
+							"// Invalid Authentication (401)",
+							"pm.test(\"Invalid authentication should return 401\", function () {",
+							"    if (pm.response.code === 401) {",
+							"        pm.expect(pm.response.code).to.equal(401);",
+							"    }",
+							"});",
+							"",
+							"// Missing Required Fields (400)",
+							"pm.test(\"Missing required fields should return 400 with correct message\", function () {",
+							"    if (pm.response.code === 400) {",
+							"        var jsonData = pm.response.json();",
+							"        pm.expect(jsonData).to.have.property(\"message\");",
+							"        pm.expect(jsonData.message).to.include(\"missing required\");",
+							"    }",
+							"});",
+							"",
+							"// Invalid Data Format (400)",
+							"pm.test(\"Invalid data format should return 400 with appropriate message\", function () {",
+							"    if (pm.response.code === 400) {",
+							"        var jsonData = pm.response.json();",
+							"        pm.expect(jsonData).to.have.property(\"message\");",
+							"        pm.expect(jsonData.message).to.include(\"Invalid format\");",
+							"    }",
+							"});",
+							"",
+							"// Non-existent Resource (404)",
+							"pm.test(\"Non-existent resource should return 404 with correct message\", function () {",
+							"    if (pm.response.code === 404) {",
+							"        var jsonData = pm.response.json();",
+							"        pm.expect(jsonData).to.have.property(\"message\");",
+							"        pm.expect(jsonData.message).to.include(\"not found\");",
+							"    }",
+							"});",
+							"",
+							"// Server Error (500)",
+							"pm.test(\"Server error should return 500 with appropriate message\", function () {",
+							"    if (pm.response.code === 500) {",
+							"        var jsonData = pm.response.json();",
+							"        pm.expect(jsonData).to.have.property(\"message\");",
+							"        pm.expect(jsonData.message).to.include(\"internal server error\");",
+							"    }",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"id": "37171695-88e44a61-820d-4761-bb8d-b611e5d90542",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{auth-token}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"data\":{\"listId\":1032,\"isPublic\":true,\"userData\":[{\"userId\":116,\"access\":[\"READ\"]}]}}\r\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base-url}}/customer-list/v1/account-list/account-share-list-save",
+					"host": [
+						"{{base-url}}"
+					],
+					"path": [
+						"customer-list",
+						"v1",
+						"account-list",
+						"account-share-list-save"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "account-list-details-count",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "f65c95dd-490c-40fb-9764-9bb436e909fc",
+						"exec": [
+							"pm.test(\"Response time is within 50ms\", function () {\r",
+							"    pm.expect(pm.response.responseTime).to.be.below(50); // Ensuring it is below 190ms\r",
+							"});\r",
+							"// Check if the response status code is 200\r",
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"// Check if response body is in JSON format\r",
+							"pm.test(\"Response body is valid JSON\", function () {\r",
+							"    pm.response.to.be.json;\r",
+							"});\r",
+							"\r",
+							"// Parse response body\r",
+							"var jsonData = pm.response.json();\r",
+							"\r",
+							"// Validate the structure of the response\r",
+							"pm.test(\"Verify response structure\", function () {\r",
+							"    pm.expect(jsonData).to.have.property(\"status\");\r",
+							"    pm.expect(jsonData.status).to.have.property(\"statusCode\", 200);\r",
+							"    pm.expect(jsonData.status).to.have.property(\"requestId\").that.is.a(\"string\").and.not.empty;\r",
+							"    pm.expect(jsonData.status).to.have.property(\"message\", \"Success\");\r",
+							"});\r",
+							"\r",
+							"// Validate data object exists\r",
+							"pm.test(\"Verify data object exists\", function () {\r",
+							"    pm.expect(jsonData).to.have.property(\"data\");\r",
+							"    pm.expect(jsonData.data).to.be.an(\"array\"); // Assuming the data should be an array\r",
+							"});\r",
+							"\r",
+							"// Validate pagination object\r",
+							"pm.test(\"Verify pagination structure\", function () {\r",
+							"    pm.expect(jsonData).to.have.property(\"pagination\");\r",
+							"    pm.expect(jsonData.pagination).to.have.property(\"pageIndex\", 1);\r",
+							"    pm.expect(jsonData.pagination).to.have.property(\"pageSize\", 10);\r",
+							"    pm.expect(jsonData.pagination).to.have.property(\"totalPages\").that.is.a(\"number\");\r",
+							"    pm.expect(jsonData.pagination).to.have.property(\"totalItems\").that.is.a(\"number\");\r",
+							"});\r",
+							"\r",
+							"// Validate searchKeyword is an empty string in the response (optional if it's included in the response)\r",
+							"pm.test(\"Verify searchKeyword is empty\", function () {\r",
+							"    pm.expect(jsonData.data).to.have.property(\"searchKeyword\", \"\");\r",
+							"});\r",
+							"// Negative Tests (Ensure Expected Errors are Handled Properly)\r",
+							"\r",
+							"// Unauthorized Access (403)\r",
+							"pm.test(\"Unauthorized access should return 403 with correct message\", function () {\r",
+							"    if (pm.response.code === 403) {\r",
+							"        var jsonData = pm.response.json();\r",
+							"        pm.expect(jsonData).to.have.property(\"message\");\r",
+							"        pm.expect(jsonData.message).to.include(\"not authorized\");\r",
+							"    }\r",
+							"});\r",
+							"\r",
+							"// Invalid Authentication (401)\r",
+							"pm.test(\"Invalid authentication should return 401\", function () {\r",
+							"    if (pm.response.code === 401) {\r",
+							"        pm.expect(pm.response.code).to.equal(401);\r",
+							"    }\r",
+							"});\r",
+							"\r",
+							"// Missing Required Fields (400)\r",
+							"pm.test(\"Missing required fields should return 400 with correct message\", function () {\r",
+							"    if (pm.response.code === 400) {\r",
+							"        var jsonData = pm.response.json();\r",
+							"        pm.expect(jsonData).to.have.property(\"message\");\r",
+							"        pm.expect(jsonData.message).to.include(\"missing required\");\r",
+							"    }\r",
+							"});\r",
+							"\r",
+							"// Invalid Data Format (400)\r",
+							"pm.test(\"Invalid data format should return 400 with appropriate message\", function () {\r",
+							"    if (pm.response.code === 400) {\r",
+							"        var jsonData = pm.response.json();\r",
+							"        pm.expect(jsonData).to.have.property(\"message\");\r",
+							"        pm.expect(jsonData.message).to.include(\"Invalid format\");\r",
+							"    }\r",
+							"});\r",
+							"\r",
+							"// Non-existent Resource (404)\r",
+							"pm.test(\"Non-existent resource should return 404 with correct message\", function () {\r",
+							"    if (pm.response.code === 404) {\r",
+							"        var jsonData = pm.response.json();\r",
+							"        pm.expect(jsonData).to.have.property(\"message\");\r",
+							"        pm.expect(jsonData.message).to.include(\"not found\");\r",
+							"    }\r",
+							"});\r",
+							"\r",
+							"// Server Error (500)\r",
+							"pm.test(\"Server error should return 500 with appropriate message\", function () {\r",
+							"    if (pm.response.code === 500) {\r",
+							"        var jsonData = pm.response.json();\r",
+							"        pm.expect(jsonData).to.have.property(\"message\");\r",
+							"        pm.expect(jsonData.message).to.include(\"internal server error\");\r",
+							"    }\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"id": "37171695-2ede2c6f-6d0d-46d5-b774-5086bd412318",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{auth-token}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"data\": {\r\n        \"accountListId\": 561,\r\n        \"filter\": \"ALL\",\r\n        \"searchKeyword\": \"\"\r\n    },\r\n    \"pagination\": {\r\n        \"pageIndex\": 1,\r\n        \"pageSize\": 10\r\n    }\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base-url}}/customer-list/v1/account-list/account-list-details-count",
+					"host": [
+						"{{base-url}}"
+					],
+					"path": [
+						"customer-list",
+						"v1",
+						"account-list",
+						"account-list-details-count"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "account-list-details",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "e42732c9-f3dc-4d97-8c4c-0ae02b91c841",
+						"exec": [
+							"pm.test(\"Response time is within 1000ms\", function () {\r",
+							"    pm.expect(pm.response.responseTime).to.be.below(1000); // Ensuring it is below 190ms\r",
+							"});\r",
+							"// Check if the response status code is 200\r",
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"// Check if response body is in JSON format\r",
+							"pm.test(\"Response body is valid JSON\", function () {\r",
+							"    pm.response.to.be.json;\r",
+							"});\r",
+							"\r",
+							"// Parse response body\r",
+							"var jsonData = pm.response.json();\r",
+							"\r",
+							"// Validate the structure of the response\r",
+							"pm.test(\"Verify response structure\", function () {\r",
+							"    pm.expect(jsonData).to.have.property(\"status\");\r",
+							"    pm.expect(jsonData.status).to.have.property(\"statusCode\", 200);\r",
+							"    pm.expect(jsonData.status).to.have.property(\"requestId\").that.is.a(\"string\").and.not.empty;\r",
+							"    pm.expect(jsonData.status).to.have.property(\"message\", \"Success\");\r",
+							"});\r",
+							"\r",
+							"// Validate data object exists\r",
+							"pm.test(\"Verify data object exists\", function () {\r",
+							"    pm.expect(jsonData).to.have.property(\"data\");\r",
+							"});\r",
+							"\r",
+							"// Validate pagination object\r",
+							"pm.test(\"Verify pagination structure\", function () {\r",
+							"    pm.expect(jsonData).to.have.property(\"pagination\");\r",
+							"    pm.expect(jsonData.pagination).to.have.property(\"pageIndex\", 1);\r",
+							"    pm.expect(jsonData.pagination).to.have.property(\"pageSize\", 10);\r",
+							"    pm.expect(jsonData.pagination).to.have.property(\"totalPages\").that.is.a(\"number\");\r",
+							"    pm.expect(jsonData.pagination).to.have.property(\"totalItems\").that.is.a(\"number\");\r",
+							"});\r",
+							"// Negative Tests (Ensure Expected Errors are Handled Properly)\r",
+							"\r",
+							"// Unauthorized Access (403)\r",
+							"pm.test(\"Unauthorized access should return 403 with correct message\", function () {\r",
+							"    if (pm.response.code === 403) {\r",
+							"        var jsonData = pm.response.json();\r",
+							"        pm.expect(jsonData).to.have.property(\"message\");\r",
+							"        pm.expect(jsonData.message).to.include(\"not authorized\");\r",
+							"    }\r",
+							"});\r",
+							"\r",
+							"// Invalid Authentication (401)\r",
+							"pm.test(\"Invalid authentication should return 401\", function () {\r",
+							"    if (pm.response.code === 401) {\r",
+							"        pm.expect(pm.response.code).to.equal(401);\r",
+							"    }\r",
+							"});\r",
+							"\r",
+							"// Missing Required Fields (400)\r",
+							"pm.test(\"Missing required fields should return 400 with correct message\", function () {\r",
+							"    if (pm.response.code === 400) {\r",
+							"        var jsonData = pm.response.json();\r",
+							"        pm.expect(jsonData).to.have.property(\"message\");\r",
+							"        pm.expect(jsonData.message).to.include(\"missing required\");\r",
+							"    }\r",
+							"});\r",
+							"\r",
+							"// Invalid Data Format (400)\r",
+							"pm.test(\"Invalid data format should return 400 with appropriate message\", function () {\r",
+							"    if (pm.response.code === 400) {\r",
+							"        var jsonData = pm.response.json();\r",
+							"        pm.expect(jsonData).to.have.property(\"message\");\r",
+							"        pm.expect(jsonData.message).to.include(\"Invalid format\");\r",
+							"    }\r",
+							"});\r",
+							"\r",
+							"// Non-existent Resource (404)\r",
+							"pm.test(\"Non-existent resource should return 404 with correct message\", function () {\r",
+							"    if (pm.response.code === 404) {\r",
+							"        var jsonData = pm.response.json();\r",
+							"        pm.expect(jsonData).to.have.property(\"message\");\r",
+							"        pm.expect(jsonData.message).to.include(\"not found\");\r",
+							"    }\r",
+							"});\r",
+							"\r",
+							"// Server Error (500)\r",
+							"pm.test(\"Server error should return 500 with appropriate message\", function () {\r",
+							"    if (pm.response.code === 500) {\r",
+							"        var jsonData = pm.response.json();\r",
+							"        pm.expect(jsonData).to.have.property(\"message\");\r",
+							"        pm.expect(jsonData.message).to.include(\"internal server error\");\r",
+							"    }\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"id": "37171695-2c677465-061d-4fcb-8cd5-7a06b15192fc",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{auth-token}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"data\": {\r\n        \"accountListId\": 562,\r\n        \"filter\": \"ALL\",\r\n        \"searchKeyword\": \"abc\"\r\n    },\r\n    \"pagination\": {\r\n        \"pageIndex\": 1,\r\n        \"pageSize\": 10\r\n    }\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base-url}}/customer-list/v1/account-list/account-list-details",
+					"host": [
+						"{{base-url}}"
+					],
+					"path": [
+						"customer-list",
+						"v1",
+						"account-list",
+						"account-list-details"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "account-delete",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "d7d09158-93e3-4672-a630-8b5f2691c11c",
+						"exec": [
+							"pm.test(\"Response time is within 123ms\", function () {\r",
+							"    pm.expect(pm.response.responseTime).to.be.below(123); // Ensuring it is below 190ms\r",
+							"});\r",
+							"// Check if the response status code is 200\r",
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"// Check if response body is in JSON format\r",
+							"pm.test(\"Response body is valid JSON\", function () {\r",
+							"    pm.response.to.be.json;\r",
+							"});\r",
+							"\r",
+							"// Parse response body\r",
+							"var jsonData = pm.response.json();\r",
+							"\r",
+							"// Validate the structure of the response\r",
+							"pm.test(\"Verify response structure\", function () {\r",
+							"    pm.expect(jsonData).to.have.property(\"status\");\r",
+							"    pm.expect(jsonData.status).to.have.property(\"statusCode\", 200);\r",
+							"    pm.expect(jsonData.status).to.have.property(\"requestId\").that.is.a(\"string\").and.not.empty;\r",
+							"    pm.expect(jsonData.status).to.have.property(\"message\", \"Success\");\r",
+							"});\r",
+							"\r",
+							"// Validate data object exists\r",
+							"pm.test(\"Verify data object exists\", function () {\r",
+							"    pm.expect(jsonData).to.have.property(\"data\");\r",
+							"    pm.expect(jsonData.data).to.be.an(\"object\");\r",
+							"});\r",
+							"\r",
+							"// Validate ID and GUIDs exist in the response\r",
+							"pm.test(\"Verify ID and GUIDs in response\", function () {\r",
+							"    pm.expect(jsonData.data).to.have.property(\"id\").that.is.a(\"string\");\r",
+							"    pm.expect(jsonData.data.id).to.equal(\"51\");\r",
+							"\r",
+							"    pm.expect(jsonData.data).to.have.property(\"guids\").that.is.an(\"array\");\r",
+							"    pm.expect(jsonData.data.guids).to.include(\"ED4E55E3BEFC46A6\");\r",
+							"});\r",
+							"// Negative Tests (Ensure Expected Errors are Handled Properly)\r",
+							"\r",
+							"// Unauthorized Access (403)\r",
+							"pm.test(\"Unauthorized access should return 403 with correct message\", function () {\r",
+							"    if (pm.response.code === 403) {\r",
+							"        var jsonData = pm.response.json();\r",
+							"        pm.expect(jsonData).to.have.property(\"message\");\r",
+							"        pm.expect(jsonData.message).to.include(\"not authorized\");\r",
+							"    }\r",
+							"});\r",
+							"\r",
+							"// Invalid Authentication (401)\r",
+							"pm.test(\"Invalid authentication should return 401\", function () {\r",
+							"    if (pm.response.code === 401) {\r",
+							"        pm.expect(pm.response.code).to.equal(401);\r",
+							"    }\r",
+							"});\r",
+							"\r",
+							"// Missing Required Fields (400)\r",
+							"pm.test(\"Missing required fields should return 400 with correct message\", function () {\r",
+							"    if (pm.response.code === 400) {\r",
+							"        var jsonData = pm.response.json();\r",
+							"        pm.expect(jsonData).to.have.property(\"message\");\r",
+							"        pm.expect(jsonData.message).to.include(\"missing required\");\r",
+							"    }\r",
+							"});\r",
+							"\r",
+							"// Invalid Data Format (400)\r",
+							"pm.test(\"Invalid data format should return 400 with appropriate message\", function () {\r",
+							"    if (pm.response.code === 400) {\r",
+							"        var jsonData = pm.response.json();\r",
+							"        pm.expect(jsonData).to.have.property(\"message\");\r",
+							"        pm.expect(jsonData.message).to.include(\"Invalid format\");\r",
+							"    }\r",
+							"});\r",
+							"\r",
+							"// Non-existent Resource (404)\r",
+							"pm.test(\"Non-existent resource should return 404 with correct message\", function () {\r",
+							"    if (pm.response.code === 404) {\r",
+							"        var jsonData = pm.response.json();\r",
+							"        pm.expect(jsonData).to.have.property(\"message\");\r",
+							"        pm.expect(jsonData.message).to.include(\"not found\");\r",
+							"    }\r",
+							"});\r",
+							"\r",
+							"// Server Error (500)\r",
+							"pm.test(\"Server error should return 500 with appropriate message\", function () {\r",
+							"    if (pm.response.code === 500) {\r",
+							"        var jsonData = pm.response.json();\r",
+							"        pm.expect(jsonData).to.have.property(\"message\");\r",
+							"        pm.expect(jsonData.message).to.include(\"internal server error\");\r",
+							"    }\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"id": "37171695-84ab5e1b-0b1f-4131-b11b-dde96f30de91",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{auth-token}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"data\": {\r\n        \"id\": \"563\",\r\n        \"guids\": [\r\n            \"B03A41F16E2F0F4C\"\r\n        ]\r\n    }\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base-url}}/customer-list/v1/account-list/account-delete",
+					"host": [
+						"{{base-url}}"
+					],
+					"path": [
+						"customer-list",
+						"v1",
+						"account-list",
+						"account-delete"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "account-list-rename",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "4a3e4ea0-9b40-49cb-95ab-7dbb493ab2d4",
+						"exec": [
+							"// Check if the response status code is 200\r",
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"// Check if response body is in JSON format\r",
+							"pm.test(\"Response body is valid JSON\", function () {\r",
+							"    pm.response.to.be.json;\r",
+							"});\r",
+							"\r",
+							"// Parse response body\r",
+							"var jsonData = pm.response.json();\r",
+							"\r",
+							"// Validate the structure of the response\r",
+							"pm.test(\"Verify response structure\", function () {\r",
+							"    pm.expect(jsonData).to.have.property(\"status\");\r",
+							"    pm.expect(jsonData.status).to.have.property(\"statusCode\", 200);\r",
+							"    pm.expect(jsonData.status).to.have.property(\"requestId\").that.is.a(\"string\").and.not.empty;\r",
+							"    pm.expect(jsonData.status).to.have.property(\"message\", \"Success\");\r",
+							"});\r",
+							"// Negative Tests (Ensure Expected Errors are Handled Properly)\r",
+							"\r",
+							"// Unauthorized Access (403)\r",
+							"pm.test(\"Unauthorized access should return 403 with correct message\", function () {\r",
+							"    if (pm.response.code === 403) {\r",
+							"        var jsonData = pm.response.json();\r",
+							"        pm.expect(jsonData).to.have.property(\"message\");\r",
+							"        pm.expect(jsonData.message).to.include(\"not authorized\");\r",
+							"    }\r",
+							"});\r",
+							"\r",
+							"// Invalid Authentication (401)\r",
+							"pm.test(\"Invalid authentication should return 401\", function () {\r",
+							"    if (pm.response.code === 401) {\r",
+							"        pm.expect(pm.response.code).to.equal(401);\r",
+							"    }\r",
+							"});\r",
+							"\r",
+							"// Missing Required Fields (400)\r",
+							"pm.test(\"Missing required fields should return 400 with correct message\", function () {\r",
+							"    if (pm.response.code === 400) {\r",
+							"        var jsonData = pm.response.json();\r",
+							"        pm.expect(jsonData).to.have.property(\"message\");\r",
+							"        pm.expect(jsonData.message).to.include(\"missing required\");\r",
+							"    }\r",
+							"});\r",
+							"\r",
+							"// Invalid Data Format (400)\r",
+							"pm.test(\"Invalid data format should return 400 with appropriate message\", function () {\r",
+							"    if (pm.response.code === 400) {\r",
+							"        var jsonData = pm.response.json();\r",
+							"        pm.expect(jsonData).to.have.property(\"message\");\r",
+							"        pm.expect(jsonData.message).to.include(\"Invalid format\");\r",
+							"    }\r",
+							"});\r",
+							"\r",
+							"// Non-existent Resource (404)\r",
+							"pm.test(\"Non-existent resource should return 404 with correct message\", function () {\r",
+							"    if (pm.response.code === 404) {\r",
+							"        var jsonData = pm.response.json();\r",
+							"        pm.expect(jsonData).to.have.property(\"message\");\r",
+							"        pm.expect(jsonData.message).to.include(\"not found\");\r",
+							"    }\r",
+							"});\r",
+							"\r",
+							"// Server Error (500)\r",
+							"pm.test(\"Server error should return 500 with appropriate message\", function () {\r",
+							"    if (pm.response.code === 500) {\r",
+							"        var jsonData = pm.response.json();\r",
+							"        pm.expect(jsonData).to.have.property(\"message\");\r",
+							"        pm.expect(jsonData.message).to.include(\"internal server error\");\r",
+							"    }\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"id": "37171695-3bd79b62-6541-485f-a8c4-a3268fe2a5ec",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{auth-token}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"data\":{\"id\":564,\"listName\":\"Copy of Ace\"}}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base-url}}/customer-list/v1/account-list/account-list-rename",
+					"host": [
+						"{{base-url}}"
+					],
+					"path": [
+						"customer-list",
+						"v1",
+						"account-list",
+						"account-list-rename"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "accounts-records-guids",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "eee17c2f-6d97-4f6b-8707-9297b079b0ee",
+						"exec": [
+							"pm.test(\"Response time is within 17 seconds\", function () {\r",
+							"    pm.expect(pm.response.responseTime).to.be.below(17000); // 17 seconds = 17000ms\r",
+							"});\r",
+							"// Check if the response status code is 200\r",
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"// Check if response body is in JSON format\r",
+							"pm.test(\"Response body is valid JSON\", function () {\r",
+							"    pm.response.to.be.json;\r",
+							"});\r",
+							"\r",
+							"// Parse response body\r",
+							"var jsonData = pm.response.json();\r",
+							"\r",
+							"// Validate the structure of the response\r",
+							"pm.test(\"Verify response structure\", function () {\r",
+							"    pm.expect(jsonData).to.have.property(\"status\");\r",
+							"    pm.expect(jsonData.status).to.have.property(\"statusCode\", 200);\r",
+							"    pm.expect(jsonData.status).to.have.property(\"requestId\").that.is.a(\"string\").and.not.empty;\r",
+							"    pm.expect(jsonData.status).to.have.property(\"message\", \"Success\");\r",
+							"});\r",
+							"\r",
+							"// Validate data object exists\r",
+							"pm.test(\"Verify data object exists\", function () {\r",
+							"    pm.expect(jsonData).to.have.property(\"data\");\r",
+							"    pm.expect(jsonData.data).to.be.an(\"array\"); // Assuming data should be an array\r",
+							"});\r",
+							"\r",
+							"// Validate pagination object\r",
+							"pm.test(\"Verify pagination structure\", function () {\r",
+							"    pm.expect(jsonData).to.have.property(\"pagination\");\r",
+							"    pm.expect(jsonData.pagination).to.have.property(\"pageIndex\", 1);\r",
+							"    pm.expect(jsonData.pagination).to.have.property(\"pageSize\", 100);\r",
+							"    pm.expect(jsonData.pagination).to.have.property(\"totalPages\").that.is.a(\"number\");\r",
+							"    pm.expect(jsonData.pagination).to.have.property(\"totalItems\").that.is.a(\"number\");\r",
+							"});\r",
+							"\r",
+							"// Validate search results contain expected keyword \"Spain\"\r",
+							"pm.test(\"Verify search results contain keyword 'Spain'\", function () {\r",
+							"    var results = jsonData.data;\r",
+							"    results.forEach(function(item) {\r",
+							"        pm.expect(JSON.stringify(item)).to.include(\"Spain\");\r",
+							"    });\r",
+							"});\r",
+							"// Negative Tests (Ensure Expected Errors are Handled Properly)\r",
+							"\r",
+							"// Unauthorized Access (403)\r",
+							"pm.test(\"Unauthorized access should return 403 with correct message\", function () {\r",
+							"    if (pm.response.code === 403) {\r",
+							"        var jsonData = pm.response.json();\r",
+							"        pm.expect(jsonData).to.have.property(\"message\");\r",
+							"        pm.expect(jsonData.message).to.include(\"not authorized\");\r",
+							"    }\r",
+							"});\r",
+							"\r",
+							"// Invalid Authentication (401)\r",
+							"pm.test(\"Invalid authentication should return 401\", function () {\r",
+							"    if (pm.response.code === 401) {\r",
+							"        pm.expect(pm.response.code).to.equal(401);\r",
+							"    }\r",
+							"});\r",
+							"\r",
+							"// Missing Required Fields (400)\r",
+							"pm.test(\"Missing required fields should return 400 with correct message\", function () {\r",
+							"    if (pm.response.code === 400) {\r",
+							"        var jsonData = pm.response.json();\r",
+							"        pm.expect(jsonData).to.have.property(\"message\");\r",
+							"        pm.expect(jsonData.message).to.include(\"missing required\");\r",
+							"    }\r",
+							"});\r",
+							"\r",
+							"// Invalid Data Format (400)\r",
+							"pm.test(\"Invalid data format should return 400 with appropriate message\", function () {\r",
+							"    if (pm.response.code === 400) {\r",
+							"        var jsonData = pm.response.json();\r",
+							"        pm.expect(jsonData).to.have.property(\"message\");\r",
+							"        pm.expect(jsonData.message).to.include(\"Invalid format\");\r",
+							"    }\r",
+							"});\r",
+							"\r",
+							"// Non-existent Resource (404)\r",
+							"pm.test(\"Non-existent resource should return 404 with correct message\", function () {\r",
+							"    if (pm.response.code === 404) {\r",
+							"        var jsonData = pm.response.json();\r",
+							"        pm.expect(jsonData).to.have.property(\"message\");\r",
+							"        pm.expect(jsonData.message).to.include(\"not found\");\r",
+							"    }\r",
+							"});\r",
+							"\r",
+							"// Server Error (500)\r",
+							"pm.test(\"Server error should return 500 with appropriate message\", function () {\r",
+							"    if (pm.response.code === 500) {\r",
+							"        var jsonData = pm.response.json();\r",
+							"        pm.expect(jsonData).to.have.property(\"message\");\r",
+							"        pm.expect(jsonData.message).to.include(\"internal server error\");\r",
+							"    }\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"id": "37171695-38802237-2429-4b9b-9a21-aecc3daf80b2",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{auth-token}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"data\": {\r\n        \"accountListId\": 1032,\r\n        \"filter\": \"ALL\",\r\n        \"searchKeyword\": \"dsp\"\r\n    },\r\n    \"pagination\": {\r\n        \"pageIndex\": 1,\r\n        \"pageSize\": 100\r\n    }\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base-url}}/customer-list/v1/account-list/accounts-records-guids",
+					"host": [
+						"{{base-url}}"
+					],
+					"path": [
+						"customer-list",
+						"v1",
+						"account-list",
+						"accounts-records-guids"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "account-list-save HANDPICKED",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "a403d46c-8b37-4a3c-822e-4a3158385c4f",
+						"exec": [
+							"pm.test(\"Response time is within 50ms\", function () {",
+							"    pm.expect(pm.response.responseTime).to.be.below(50); // Ensuring it is below 190ms",
+							"});",
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"Response body is valid JSON\", function () {",
+							"    pm.response.to.be.json;",
+							"});",
+							"",
+							"pm.test(\"Verify status object exists\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData).to.have.property(\"status\");",
+							"    pm.expect(jsonData.status).to.have.property(\"statusCode\", 200);",
+							"    pm.expect(jsonData.status).to.have.property(\"requestId\");",
+							"    pm.expect(jsonData.status.requestId).to.be.a(\"string\").and.not.empty;",
+							"    pm.expect(jsonData.status).to.have.property(\"message\", \"Success\");",
+							"});",
+							"",
+							"pm.test(\"Verify data object is a number\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData).to.have.property(\"data\");",
+							"    pm.expect(jsonData.data).to.be.a(\"number\");",
+							"    pm.expect(jsonData.data).to.equal(28);",
+							"});",
+							"",
+							"pm.test(\"Verify no unexpected properties exist\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData).to.have.all.keys(\"status\", \"data\");",
+							"    pm.expect(jsonData.status).to.have.all.keys(\"statusCode\", \"requestId\", \"message\");",
+							"});",
+							"",
+							"",
+							"// Negative Tests (Ensure Expected Errors are Handled Properly)",
+							"",
+							"// Unauthorized Access (403)",
+							"pm.test(\"Unauthorized access should return 403 with correct message\", function () {",
+							"    if (pm.response.code === 403) {",
+							"        var jsonData = pm.response.json();",
+							"        pm.expect(jsonData).to.have.property(\"message\");",
+							"        pm.expect(jsonData.message).to.include(\"not authorized\");",
+							"    }",
+							"});",
+							"",
+							"// Invalid Authentication (401)",
+							"pm.test(\"Invalid authentication should return 401\", function () {",
+							"    if (pm.response.code === 401) {",
+							"        pm.expect(pm.response.code).to.equal(401);",
+							"    }",
+							"});",
+							"",
+							"// Missing Required Fields (400)",
+							"pm.test(\"Missing required fields should return 400 with correct message\", function () {",
+							"    if (pm.response.code === 400) {",
+							"        var jsonData = pm.response.json();",
+							"        pm.expect(jsonData).to.have.property(\"message\");",
+							"        pm.expect(jsonData.message).to.include(\"missing required\");",
+							"    }",
+							"});",
+							"",
+							"// Invalid Data Format (400)",
+							"pm.test(\"Invalid data format should return 400 with appropriate message\", function () {",
+							"    if (pm.response.code === 400) {",
+							"        var jsonData = pm.response.json();",
+							"        pm.expect(jsonData).to.have.property(\"message\");",
+							"        pm.expect(jsonData.message).to.include(\"Invalid format\");",
+							"    }",
+							"});",
+							"",
+							"// Non-existent Resource (404)",
+							"pm.test(\"Non-existent resource should return 404 with correct message\", function () {",
+							"    if (pm.response.code === 404) {",
+							"        var jsonData = pm.response.json();",
+							"        pm.expect(jsonData).to.have.property(\"message\");",
+							"        pm.expect(jsonData.message).to.include(\"not found\");",
+							"    }",
+							"});",
+							"",
+							"// Server Error (500)",
+							"pm.test(\"Server error should return 500 with appropriate message\", function () {",
+							"    if (pm.response.code === 500) {",
+							"        var jsonData = pm.response.json();",
+							"        pm.expect(jsonData).to.have.property(\"message\");",
+							"        pm.expect(jsonData.message).to.include(\"internal server error\");",
+							"    }",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"id": "37171695-76dd2292-74a4-485b-9b21-2998a234fc19",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{auth-token}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"data\": [\r\n        {\r\n            \"listName\": \"abcdqw\",\r\n            \"revealIds\": [\r\n                \"1540\"\r\n            ],\r\n            \"type\": \"HANDPICKED\"\r\n        }\r\n    ]\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base-url}}/customer-list/v1/account-list/account-list-save",
+					"host": [
+						"{{base-url}}"
+					],
+					"path": [
+						"customer-list",
+						"v1",
+						"account-list",
+						"account-list-save"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "account-reveal Employee List",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "f0a1ca55-5a8f-426f-a000-c0c3116d8179",
+						"exec": [
+							"pm.test(\"Response time is within 500ms\", function () {",
+							"    pm.expect(pm.response.responseTime).to.be.below(500); // Ensuring it is below 190ms",
+							"});",
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"Response body is valid JSON\", function () {",
+							"    pm.response.to.be.json;",
+							"});",
+							"",
+							"pm.test(\"Verify status object exists and contains expected values\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    ",
+							"    pm.expect(jsonData).to.have.property(\"status\");",
+							"    pm.expect(jsonData.status).to.have.property(\"statusCode\", 200);",
+							"    pm.expect(jsonData.status).to.have.property(\"requestId\").that.is.a(\"string\").and.not.empty;",
+							"    pm.expect(jsonData.status).to.have.property(\"message\", \"Success\");",
+							"});",
+							"",
+							"pm.test(\"Verify data object contains expected structure\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    ",
+							"    pm.expect(jsonData).to.have.property(\"data\");",
+							"    ",
+							"    // Check if the specific company GUID key exists in data",
+							"    var companyGuidKey = \"EA616094B5C149D4\";",
+							"    pm.expect(jsonData.data).to.have.property(companyGuidKey);",
+							"    ",
+							"    // Validate the structure inside the company GUID object",
+							"    pm.expect(jsonData.data[companyGuidKey]).to.have.property(\"status\", false);",
+							"   // pm.expect(jsonData.data[companyGuidKey]).to.have.property(\"revealId\", 1926);",
+							"});",
+							"// Negative Tests (Ensure Expected Errors are Handled Properly)",
+							"",
+							"// Unauthorized Access (403)",
+							"pm.test(\"Unauthorized access should return 403 with correct message\", function () {",
+							"    if (pm.response.code === 403) {",
+							"        var jsonData = pm.response.json();",
+							"        pm.expect(jsonData).to.have.property(\"message\");",
+							"        pm.expect(jsonData.message).to.include(\"not authorized\");",
+							"    }",
+							"});",
+							"",
+							"// Invalid Authentication (401)",
+							"pm.test(\"Invalid authentication should return 401\", function () {",
+							"    if (pm.response.code === 401) {",
+							"        pm.expect(pm.response.code).to.equal(401);",
+							"    }",
+							"});",
+							"",
+							"// Missing Required Fields (400)",
+							"pm.test(\"Missing required fields should return 400 with correct message\", function () {",
+							"    if (pm.response.code === 400) {",
+							"        var jsonData = pm.response.json();",
+							"        pm.expect(jsonData).to.have.property(\"message\");",
+							"        pm.expect(jsonData.message).to.include(\"missing required\");",
+							"    }",
+							"});",
+							"",
+							"// Invalid Data Format (400)",
+							"pm.test(\"Invalid data format should return 400 with appropriate message\", function () {",
+							"    if (pm.response.code === 400) {",
+							"        var jsonData = pm.response.json();",
+							"        pm.expect(jsonData).to.have.property(\"message\");",
+							"        pm.expect(jsonData.message).to.include(\"Invalid format\");",
+							"    }",
+							"});",
+							"",
+							"// Non-existent Resource (404)",
+							"pm.test(\"Non-existent resource should return 404 with correct message\", function () {",
+							"    if (pm.response.code === 404) {",
+							"        var jsonData = pm.response.json();",
+							"        pm.expect(jsonData).to.have.property(\"message\");",
+							"        pm.expect(jsonData.message).to.include(\"not found\");",
+							"    }",
+							"});",
+							"",
+							"// Server Error (500)",
+							"pm.test(\"Server error should return 500 with appropriate message\", function () {",
+							"    if (pm.response.code === 500) {",
+							"        var jsonData = pm.response.json();",
+							"        pm.expect(jsonData).to.have.property(\"message\");",
+							"        pm.expect(jsonData.message).to.include(\"internal server error\");",
+							"    }",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"id": "37171695-fbbd8784-05e1-46c9-b5af-1950de2a18c0",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{auth-token}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"data\": {\r\n        \"type\": \"NEW\",\r\n        \"revealSource\": \"Employee List\",\r\n        \"compGuids\": [\r\n            \"35C888AB5B5F49B0\"\r\n        ]\r\n    }\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base-url}}/customer-list/v1/account-list/account-reveal",
+					"host": [
+						"{{base-url}}"
+					],
+					"path": [
+						"customer-list",
+						"v1",
+						"account-list",
+						"account-reveal"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "account-reveal Chrome Addon",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "c17318f6-bd7c-4aa3-b54b-95649dfb81c7",
+						"exec": [
+							"// Response Time Check",
+							"pm.test(\"Response time is within 190ms\", function () {",
+							"    pm.expect(pm.response.responseTime).to.be.below(190);",
+							"});",
+							"",
+							"// Status Code Validation",
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"// Validate JSON Response Format",
+							"pm.test(\"Response body is valid JSON\", function () {",
+							"    pm.response.to.be.json;",
+							"});",
+							"",
+							"// Verify \"status\" Object Structure",
+							"pm.test(\"Verify 'status' object exists and contains expected values\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    ",
+							"    pm.expect(jsonData).to.have.property(\"status\");",
+							"    pm.expect(jsonData.status).to.have.property(\"statusCode\", 200);",
+							"    pm.expect(jsonData.status).to.have.property(\"requestId\").that.is.a(\"string\").and.not.empty;",
+							"    pm.expect(jsonData.status).to.have.property(\"message\", \"Success\");",
+							"});",
+							"",
+							"// Verify \"data\" Object Structure",
+							"pm.test(\"Verify 'data' object contains expected structure\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    ",
+							"    pm.expect(jsonData).to.have.property(\"data\");",
+							"    ",
+							"    // Check for specific company GUID key",
+							"    var companyGuidKey = \"F7FEF9868896D99B\";",
+							"    pm.expect(jsonData.data).to.have.property(companyGuidKey);",
+							"    ",
+							"    // Validate structure inside the company GUID object",
+							"    pm.expect(jsonData.data[companyGuidKey]).to.have.property(\"status\", false);",
+							"    // Uncomment if \"revealId\" validation is required",
+							"    // pm.expect(jsonData.data[companyGuidKey]).to.have.property(\"revealId\", 1926);",
+							"});",
+							"",
+							"// Negative Tests (Ensure Expected Errors are Handled Properly)",
+							"",
+							"// Unauthorized Access (403)",
+							"pm.test(\"Unauthorized access should return 403 with correct message\", function () {",
+							"    if (pm.response.code === 403) {",
+							"        var jsonData = pm.response.json();",
+							"        pm.expect(jsonData).to.have.property(\"message\");",
+							"        pm.expect(jsonData.message).to.include(\"not authorized\");",
+							"    }",
+							"});",
+							"",
+							"// Invalid Authentication (401)",
+							"pm.test(\"Invalid authentication should return 401\", function () {",
+							"    if (pm.response.code === 401) {",
+							"        pm.expect(pm.response.code).to.equal(401);",
+							"    }",
+							"});",
+							"",
+							"// Missing Required Fields (400)",
+							"pm.test(\"Missing required fields should return 400 with correct message\", function () {",
+							"    if (pm.response.code === 400) {",
+							"        var jsonData = pm.response.json();",
+							"        pm.expect(jsonData).to.have.property(\"message\");",
+							"        pm.expect(jsonData.message).to.include(\"missing required\");",
+							"    }",
+							"});",
+							"",
+							"// Invalid Data Format (400)",
+							"pm.test(\"Invalid data format should return 400 with appropriate message\", function () {",
+							"    if (pm.response.code === 400) {",
+							"        var jsonData = pm.response.json();",
+							"        pm.expect(jsonData).to.have.property(\"message\");",
+							"        pm.expect(jsonData.message).to.include(\"Invalid format\");",
+							"    }",
+							"});",
+							"",
+							"// Non-existent Resource (404)",
+							"pm.test(\"Non-existent resource should return 404 with correct message\", function () {",
+							"    if (pm.response.code === 404) {",
+							"        var jsonData = pm.response.json();",
+							"        pm.expect(jsonData).to.have.property(\"message\");",
+							"        pm.expect(jsonData.message).to.include(\"not found\");",
+							"    }",
+							"});",
+							"",
+							"// Server Error (500)",
+							"pm.test(\"Server error should return 500 with appropriate message\", function () {",
+							"    if (pm.response.code === 500) {",
+							"        var jsonData = pm.response.json();",
+							"        pm.expect(jsonData).to.have.property(\"message\");",
+							"        pm.expect(jsonData.message).to.include(\"internal server error\");",
+							"    }",
+							"});",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"id": "37171695-e8d0a99c-b4cf-4a55-861d-f3e743b0e31f",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{auth-token}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"data\": {\r\n        \"type\": \"NEW\",\r\n        \"revealSource\": \"Chrome Addon\",\r\n        \"compGuids\": [\r\n            \"A82B5BEDA81FC3ED\"\r\n        ]\r\n    }\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base-url}}/customer-list/v1/account-list/account-reveal",
+					"host": [
+						"{{base-url}}"
+					],
+					"path": [
+						"customer-list",
+						"v1",
+						"account-list",
+						"account-reveal"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "account-reveal Contact Profile Page",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "ae9938f5-3ef6-4fa6-83ba-8ed9655fe57b",
+						"exec": [
+							"pm.test(\"Response time is within 250ms\", function () {",
+							"    pm.expect(pm.response.responseTime).to.be.below(250); // Ensuring it is below 190ms",
+							"});",
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"Response body is valid JSON\", function () {",
+							"    pm.response.to.be.json;",
+							"});",
+							"",
+							"pm.test(\"Verify status object exists and contains expected values\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    ",
+							"    pm.expect(jsonData).to.have.property(\"status\");",
+							"    pm.expect(jsonData.status).to.have.property(\"statusCode\", 200);",
+							"    pm.expect(jsonData.status).to.have.property(\"requestId\").that.is.a(\"string\").and.not.empty;",
+							"    pm.expect(jsonData.status).to.have.property(\"message\", \"Success\");",
+							"});",
+							"",
+							"pm.test(\"Verify data object contains expected structure\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    ",
+							"    pm.expect(jsonData).to.have.property(\"data\");",
+							"    ",
+							"    // Check if the specific company GUID key exists in data",
+							"    var companyGuidKey = \"EA616094B5C149D4\";",
+							"    pm.expect(jsonData.data).to.have.property(companyGuidKey);",
+							"    ",
+							"    // Validate the structure inside the company GUID object",
+							"    pm.expect(jsonData.data[companyGuidKey]).to.have.property(\"status\", false);",
+							"   // pm.expect(jsonData.data[companyGuidKey]).to.have.property(\"revealId\", 1926);",
+							"});",
+							"",
+							"",
+							"// Negative Tests (Ensure Expected Errors are Handled Properly)",
+							"",
+							"// Unauthorized Access (403)",
+							"pm.test(\"Unauthorized access should return 403 with correct message\", function () {",
+							"    if (pm.response.code === 403) {",
+							"        var jsonData = pm.response.json();",
+							"        pm.expect(jsonData).to.have.property(\"message\");",
+							"        pm.expect(jsonData.message).to.include(\"not authorized\");",
+							"    }",
+							"});",
+							"",
+							"// Invalid Authentication (401)",
+							"pm.test(\"Invalid authentication should return 401\", function () {",
+							"    if (pm.response.code === 401) {",
+							"        pm.expect(pm.response.code).to.equal(401);",
+							"    }",
+							"});",
+							"",
+							"// Missing Required Fields (400)",
+							"pm.test(\"Missing required fields should return 400 with correct message\", function () {",
+							"    if (pm.response.code === 400) {",
+							"        var jsonData = pm.response.json();",
+							"        pm.expect(jsonData).to.have.property(\"message\");",
+							"        pm.expect(jsonData.message).to.include(\"missing required\");",
+							"    }",
+							"});",
+							"",
+							"// Invalid Data Format (400)",
+							"pm.test(\"Invalid data format should return 400 with appropriate message\", function () {",
+							"    if (pm.response.code === 400) {",
+							"        var jsonData = pm.response.json();",
+							"        pm.expect(jsonData).to.have.property(\"message\");",
+							"        pm.expect(jsonData.message).to.include(\"Invalid format\");",
+							"    }",
+							"});",
+							"",
+							"// Non-existent Resource (404)",
+							"pm.test(\"Non-existent resource should return 404 with correct message\", function () {",
+							"    if (pm.response.code === 404) {",
+							"        var jsonData = pm.response.json();",
+							"        pm.expect(jsonData).to.have.property(\"message\");",
+							"        pm.expect(jsonData.message).to.include(\"not found\");",
+							"    }",
+							"});",
+							"",
+							"// Server Error (500)",
+							"pm.test(\"Server error should return 500 with appropriate message\", function () {",
+							"    if (pm.response.code === 500) {",
+							"        var jsonData = pm.response.json();",
+							"        pm.expect(jsonData).to.have.property(\"message\");",
+							"        pm.expect(jsonData.message).to.include(\"internal server error\");",
+							"    }",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"id": "37171695-5c22c199-24d0-4513-bf2b-7ee4bceb854e",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{auth-token}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"data\": {\r\n        \"type\": \"NEW\",\r\n        \"revealSource\": \"Contact Profile Page\",\r\n        \"compGuids\": [\r\n            \"2477416881D7405D\"\r\n        ]\r\n    }\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base-url}}/customer-list/v1/account-list/account-reveal",
+					"host": [
+						"{{base-url}}"
+					],
+					"path": [
+						"customer-list",
+						"v1",
+						"account-list",
+						"account-reveal"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "account-reveal Contact Reveal",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "e5cc247f-c1fe-41fb-a433-cfa37f3af317",
+						"exec": [
+							"pm.test(\"Response time is within 250ms\", function () {",
+							"    pm.expect(pm.response.responseTime).to.be.below(250); // Ensuring it is below 190ms",
+							"});",
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"Response body is valid JSON\", function () {",
+							"    pm.response.to.be.json;",
+							"});",
+							"",
+							"pm.test(\"Verify status object exists and contains expected values\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    ",
+							"    pm.expect(jsonData).to.have.property(\"status\");",
+							"    pm.expect(jsonData.status).to.have.property(\"statusCode\", 200);",
+							"    pm.expect(jsonData.status).to.have.property(\"requestId\").that.is.a(\"string\").and.not.empty;",
+							"    pm.expect(jsonData.status).to.have.property(\"message\", \"Success\");",
+							"});",
+							"",
+							"pm.test(\"Verify data object contains expected structure\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    ",
+							"    pm.expect(jsonData).to.have.property(\"data\");",
+							"    ",
+							"    // Check if the specific company GUID key exists in data",
+							"    var companyGuidKey = \"EA616094B5C149D4\";",
+							"    pm.expect(jsonData.data).to.have.property(companyGuidKey);",
+							"    ",
+							"    // Validate the structure inside the company GUID object",
+							"    pm.expect(jsonData.data[companyGuidKey]).to.have.property(\"status\", false);",
+							"   // pm.expect(jsonData.data[companyGuidKey]).to.have.property(\"revealId\", 1926);",
+							"});",
+							"",
+							"",
+							"// Negative Tests (Ensure Expected Errors are Handled Properly)",
+							"",
+							"// Unauthorized Access (403)",
+							"pm.test(\"Unauthorized access should return 403 with correct message\", function () {",
+							"    if (pm.response.code === 403) {",
+							"        var jsonData = pm.response.json();",
+							"        pm.expect(jsonData).to.have.property(\"message\");",
+							"        pm.expect(jsonData.message).to.include(\"not authorized\");",
+							"    }",
+							"});",
+							"",
+							"// Invalid Authentication (401)",
+							"pm.test(\"Invalid authentication should return 401\", function () {",
+							"    if (pm.response.code === 401) {",
+							"        pm.expect(pm.response.code).to.equal(401);",
+							"    }",
+							"});",
+							"",
+							"// Missing Required Fields (400)",
+							"pm.test(\"Missing required fields should return 400 with correct message\", function () {",
+							"    if (pm.response.code === 400) {",
+							"        var jsonData = pm.response.json();",
+							"        pm.expect(jsonData).to.have.property(\"message\");",
+							"        pm.expect(jsonData.message).to.include(\"missing required\");",
+							"    }",
+							"});",
+							"",
+							"// Invalid Data Format (400)",
+							"pm.test(\"Invalid data format should return 400 with appropriate message\", function () {",
+							"    if (pm.response.code === 400) {",
+							"        var jsonData = pm.response.json();",
+							"        pm.expect(jsonData).to.have.property(\"message\");",
+							"        pm.expect(jsonData.message).to.include(\"Invalid format\");",
+							"    }",
+							"});",
+							"",
+							"// Non-existent Resource (404)",
+							"pm.test(\"Non-existent resource should return 404 with correct message\", function () {",
+							"    if (pm.response.code === 404) {",
+							"        var jsonData = pm.response.json();",
+							"        pm.expect(jsonData).to.have.property(\"message\");",
+							"        pm.expect(jsonData.message).to.include(\"not found\");",
+							"    }",
+							"});",
+							"",
+							"// Server Error (500)",
+							"pm.test(\"Server error should return 500 with appropriate message\", function () {",
+							"    if (pm.response.code === 500) {",
+							"        var jsonData = pm.response.json();",
+							"        pm.expect(jsonData).to.have.property(\"message\");",
+							"        pm.expect(jsonData.message).to.include(\"internal server error\");",
+							"    }",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"id": "37171695-caf2f21e-3e7e-48af-834b-4f442a8c3c84",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{auth-token}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"data\": {\r\n        \"type\": \"NEW\",\r\n        \"revealSource\": \"Contact Reveal\",\r\n        \"compGuids\": [\r\n            \"32B5E55AB690BEFD\"\r\n        ]\r\n    }\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base-url}}/customer-list/v1/account-list/account-reveal",
+					"host": [
+						"{{base-url}}"
+					],
+					"path": [
+						"customer-list",
+						"v1",
+						"account-list",
+						"account-reveal"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "account-revealed-guid",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "b361c478-e443-4c3d-8ead-fe6a1bc5a478",
+						"exec": [
+							"pm.test(\"Response time is within 100ms\", function () {",
+							"    pm.expect(pm.response.responseTime).to.be.below(100); // Ensuring it is below 190ms",
+							"});",
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"Response body is valid JSON\", function () {",
+							"    pm.response.to.be.json;",
+							"});",
+							"",
+							"pm.test(\"Verify status object exists\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData).to.have.property(\"status\");",
+							"    pm.expect(jsonData.status).to.have.property(\"statusCode\", 200);",
+							"    pm.expect(jsonData.status).to.have.property(\"requestId\");",
+							"    pm.expect(jsonData.status.requestId).to.be.a(\"string\").and.not.empty;",
+							"    pm.expect(jsonData.status).to.have.property(\"message\", \"Success\");",
+							"});",
+							"",
+							"pm.test(\"Verify data object exists and contains expected values\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData).to.have.property(\"data\");",
+							"    //pm.expect(jsonData.data).to.have.property(\"isExported\", false);",
+							"    //pm.expect(jsonData.data).to.have.property(\"isRevealed\", false);",
+							"});",
+							"",
+							"",
+							"// Negative Tests (Ensure Expected Errors are Handled Properly)",
+							"",
+							"// Unauthorized Access (403)",
+							"pm.test(\"Unauthorized access should return 403 with correct message\", function () {",
+							"    if (pm.response.code === 403) {",
+							"        var jsonData = pm.response.json();",
+							"        pm.expect(jsonData).to.have.property(\"message\");",
+							"        pm.expect(jsonData.message).to.include(\"not authorized\");",
+							"    }",
+							"});",
+							"",
+							"// Invalid Authentication (401)",
+							"pm.test(\"Invalid authentication should return 401\", function () {",
+							"    if (pm.response.code === 401) {",
+							"        pm.expect(pm.response.code).to.equal(401);",
+							"    }",
+							"});",
+							"",
+							"// Missing Required Fields (400)",
+							"pm.test(\"Missing required fields should return 400 with correct message\", function () {",
+							"    if (pm.response.code === 400) {",
+							"        var jsonData = pm.response.json();",
+							"        pm.expect(jsonData).to.have.property(\"message\");",
+							"        pm.expect(jsonData.message).to.include(\"missing required\");",
+							"    }",
+							"});",
+							"",
+							"// Invalid Data Format (400)",
+							"pm.test(\"Invalid data format should return 400 with appropriate message\", function () {",
+							"    if (pm.response.code === 400) {",
+							"        var jsonData = pm.response.json();",
+							"        pm.expect(jsonData).to.have.property(\"message\");",
+							"        pm.expect(jsonData.message).to.include(\"Invalid format\");",
+							"    }",
+							"});",
+							"",
+							"// Non-existent Resource (404)",
+							"pm.test(\"Non-existent resource should return 404 with correct message\", function () {",
+							"    if (pm.response.code === 404) {",
+							"        var jsonData = pm.response.json();",
+							"        pm.expect(jsonData).to.have.property(\"message\");",
+							"        pm.expect(jsonData.message).to.include(\"not found\");",
+							"    }",
+							"});",
+							"",
+							"// Server Error (500)",
+							"pm.test(\"Server error should return 500 with appropriate message\", function () {",
+							"    if (pm.response.code === 500) {",
+							"        var jsonData = pm.response.json();",
+							"        pm.expect(jsonData).to.have.property(\"message\");",
+							"        pm.expect(jsonData.message).to.include(\"internal server error\");",
+							"    }",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"id": "37171695-e03fdb3a-5a9f-4e23-9b1c-38b062679226",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{auth-token}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"data\": {\r\n        \"compGuid\": \"1016\"\r\n    }\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base-url}}/customer-list/v1/account-list/account-revealed-guid",
+					"host": [
+						"{{base-url}}"
+					],
+					"path": [
+						"customer-list",
+						"v1",
+						"account-list",
+						"account-revealed-guid"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "company/profile",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "df3eae8e-5eb6-40a7-bc22-1e3d7db9a612",
+						"exec": [
+							"pm.test(\"Response time is within 250ms\", function () {",
+							"    pm.expect(pm.response.responseTime).to.be.below(250); // Ensuring it is below 190ms",
+							"});",
+							"pm.test(\"Response status code is 200\", function () {",
+							"  pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"Business status code is CE100\", function () {",
+							"    const responseData = pm.response.json();",
+							"    pm.expect(responseData.businessStatusCode).to.equal(\"CE100\"); // Corrected",
+							"});",
+							"",
+							"pm.test(\"Response body matches the expected schema\", function () {",
+							"    const responseData = pm.response.json();",
+							"",
+							"    pm.expect(responseData.data.matched_record).to.have.property('company_name');",
+							"    pm.expect(responseData.data.matched_record.company_name).to.be.a('string');",
+							"",
+							"    pm.expect(responseData.data.matched_record).to.have.property('industry_name');",
+							"",
+							"    // Check if industry_name is a string and parse it if necessary",
+							"    let industryData = responseData.data.matched_record.industry_name;",
+							"    if (typeof industryData === 'string') {",
+							"        try {",
+							"            industryData = JSON.parse(industryData); // Convert to JSON array",
+							"        } catch (e) {",
+							"            console.error(\"Error parsing industry_name:\", e);",
+							"        }",
+							"    }",
+							"",
+							"    pm.expect(industryData).to.be.an('array'); // Now it should work",
+							"",
+							"    pm.expect(responseData.data.matched_record).to.have.property('global_employee_count');",
+							"    pm.expect(responseData.data.matched_record.global_employee_count).to.be.a('string');",
+							"});",
+							"",
+							"pm.test(\"Response time is less than 500ms\", function () {",
+							"  pm.expect(pm.response.responseTime).to.be.below(500);",
+							"});",
+							"",
+							"pm.test(\"Response headers contain the required information\", function () {",
+							"    pm.expect(pm.response.headers.get(\"Content-Type\")).to.exist;",
+							"    pm.expect(pm.response.headers.get(\"Content-Type\")).to.include(\"application/json\");",
+							"});",
+							"",
+							"",
+							"// Negative Tests (Ensure Expected Errors are Handled Properly)",
+							"",
+							"// Unauthorized Access (403)",
+							"pm.test(\"Unauthorized access should return 403 with correct message\", function () {",
+							"    if (pm.response.code === 403) {",
+							"        var jsonData = pm.response.json();",
+							"        pm.expect(jsonData).to.have.property(\"message\");",
+							"        pm.expect(jsonData.message).to.include(\"not authorized\");",
+							"    }",
+							"});",
+							"",
+							"// Invalid Authentication (401)",
+							"pm.test(\"Invalid authentication should return 401\", function () {",
+							"    if (pm.response.code === 401) {",
+							"        pm.expect(pm.response.code).to.equal(401);",
+							"    }",
+							"});",
+							"",
+							"// Missing Required Fields (400)",
+							"pm.test(\"Missing required fields should return 400 with correct message\", function () {",
+							"    if (pm.response.code === 400) {",
+							"        var jsonData = pm.response.json();",
+							"        pm.expect(jsonData).to.have.property(\"message\");",
+							"        pm.expect(jsonData.message).to.include(\"missing required\");",
+							"    }",
+							"});",
+							"",
+							"// Invalid Data Format (400)",
+							"pm.test(\"Invalid data format should return 400 with appropriate message\", function () {",
+							"    if (pm.response.code === 400) {",
+							"        var jsonData = pm.response.json();",
+							"        pm.expect(jsonData).to.have.property(\"message\");",
+							"        pm.expect(jsonData.message).to.include(\"Invalid format\");",
+							"    }",
+							"});",
+							"",
+							"// Non-existent Resource (404)",
+							"pm.test(\"Non-existent resource should return 404 with correct message\", function () {",
+							"    if (pm.response.code === 404) {",
+							"        var jsonData = pm.response.json();",
+							"        pm.expect(jsonData).to.have.property(\"message\");",
+							"        pm.expect(jsonData.message).to.include(\"not found\");",
+							"    }",
+							"});",
+							"",
+							"// Server Error (500)",
+							"pm.test(\"Server error should return 500 with appropriate message\", function () {",
+							"    if (pm.response.code === 500) {",
+							"        var jsonData = pm.response.json();",
+							"        pm.expect(jsonData).to.have.property(\"message\");",
+							"        pm.expect(jsonData.message).to.include(\"internal server error\");",
+							"    }",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"id": "37171695-a3bc1bf5-a79e-4175-8b74-ae81fb9004f1",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{auth-token}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"company_guid\": \"35C888AB5B5F49B0\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base-url}}/company/profile",
+					"host": [
+						"{{base-url}}"
+					],
+					"path": [
+						"company",
+						"profile"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "company/profile-tech-funding",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "b97599d9-b362-4643-9927-c6e41ec4636b",
+						"exec": [
+							"pm.test(\"Response time is within 250ms\", function () {",
+							"    pm.expect(pm.response.responseTime).to.be.below(250); // Ensuring it is below 190ms",
+							"});",
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"Response body is valid JSON\", function () {",
+							"    pm.response.to.be.json;",
+							"});",
+							"",
+							"pm.test(\"Verify business status code\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData).to.have.property(\"businessStatusCode\", \"CE100\");",
+							"});",
+							"",
+							"pm.test(\"Verify required fields exist in matched_record\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    var matchedRecord = jsonData.data.matched_record;",
+							"",
+							"    pm.expect(matchedRecord).to.have.property(\"company_guid\", \"36E3D30EB2F37714\");",
+							"    pm.expect(matchedRecord).to.have.property(\"rc_comp_ipo_stock_symbol\", \"NYSE:TTM\");",
+							"    pm.expect(matchedRecord).to.have.property(\"rc_comp_ipo_status\", \"public\");",
+							"    pm.expect(matchedRecord).to.have.property(\"rc_comp_funding_value_usd\", \"0\");",
+							"    pm.expect(matchedRecord).to.have.property(\"rc_comp_funding_rounds_count\", \"1\");",
+							"    pm.expect(matchedRecord).to.have.property(\"rc_comp_ipo_public_on_date\", \"1097193600000\");",
+							"    pm.expect(matchedRecord).to.have.property(\"comp_tech_install\");",
+							"});",
+							"",
+							"pm.test(\"Verify comp_tech_install is a valid JSON array\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    var compTechInstall = jsonData.data.matched_record.comp_tech_install;",
+							"",
+							"    try {",
+							"        var parsedData = JSON.parse(compTechInstall);",
+							"        pm.expect(parsedData).to.be.an(\"array\");",
+							"        pm.expect(parsedData.length).to.be.above(0); // Ensures array is not empty",
+							"    } catch (e) {",
+							"        pm.expect.fail(\"comp_tech_install is not a valid JSON array\");",
+							"    }",
+							"});",
+							"",
+							"",
+							"// Negative Tests (Ensure Expected Errors are Handled Properly)",
+							"",
+							"// Unauthorized Access (403)",
+							"pm.test(\"Unauthorized access should return 403 with correct message\", function () {",
+							"    if (pm.response.code === 403) {",
+							"        var jsonData = pm.response.json();",
+							"        pm.expect(jsonData).to.have.property(\"message\");",
+							"        pm.expect(jsonData.message).to.include(\"not authorized\");",
+							"    }",
+							"});",
+							"",
+							"// Invalid Authentication (401)",
+							"pm.test(\"Invalid authentication should return 401\", function () {",
+							"    if (pm.response.code === 401) {",
+							"        pm.expect(pm.response.code).to.equal(401);",
+							"    }",
+							"});",
+							"",
+							"// Missing Required Fields (400)",
+							"pm.test(\"Missing required fields should return 400 with correct message\", function () {",
+							"    if (pm.response.code === 400) {",
+							"        var jsonData = pm.response.json();",
+							"        pm.expect(jsonData).to.have.property(\"message\");",
+							"        pm.expect(jsonData.message).to.include(\"missing required\");",
+							"    }",
+							"});",
+							"",
+							"// Invalid Data Format (400)",
+							"pm.test(\"Invalid data format should return 400 with appropriate message\", function () {",
+							"    if (pm.response.code === 400) {",
+							"        var jsonData = pm.response.json();",
+							"        pm.expect(jsonData).to.have.property(\"message\");",
+							"        pm.expect(jsonData.message).to.include(\"Invalid format\");",
+							"    }",
+							"});",
+							"",
+							"// Non-existent Resource (404)",
+							"pm.test(\"Non-existent resource should return 404 with correct message\", function () {",
+							"    if (pm.response.code === 404) {",
+							"        var jsonData = pm.response.json();",
+							"        pm.expect(jsonData).to.have.property(\"message\");",
+							"        pm.expect(jsonData.message).to.include(\"not found\");",
+							"    }",
+							"});",
+							"",
+							"// Server Error (500)",
+							"pm.test(\"Server error should return 500 with appropriate message\", function () {",
+							"    if (pm.response.code === 500) {",
+							"        var jsonData = pm.response.json();",
+							"        pm.expect(jsonData).to.have.property(\"message\");",
+							"        pm.expect(jsonData.message).to.include(\"internal server error\");",
+							"    }",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"id": "37171695-8f636bec-10e5-4ebb-b487-5e81e4b644a7",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{auth-token}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"company_guid\": \"EFFA8CAF4814299C\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base-url}}/company/profile-tech-funding",
+					"host": [
+						"{{base-url}}"
+					],
+					"path": [
+						"company",
+						"profile-tech-funding"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "save-export-popup",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "6583c038-31d1-4080-a767-cad6ce2af01e",
+						"exec": [
+							"pm.test(\"Response time is within 50ms\", function () {",
+							"    pm.expect(pm.response.responseTime).to.be.below(50); // Ensuring it is below 190ms",
+							"});",
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"Response body is valid JSON\", function () {",
+							"    pm.response.to.be.json;",
+							"});",
+							"",
+							"pm.test(\"Verify status object exists\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData).to.have.property(\"status\");",
+							"    pm.expect(jsonData.status).to.have.property(\"statusCode\", 200);",
+							"    pm.expect(jsonData.status).to.have.property(\"requestId\");",
+							"    pm.expect(jsonData.status.requestId).to.be.a(\"string\").and.not.empty;",
+							"    pm.expect(jsonData.status).to.have.property(\"message\", \"Success\");",
+							"});",
+							"",
+							"pm.test(\"Verify no unexpected properties exist\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData).to.have.all.keys(\"status\");",
+							"    pm.expect(jsonData.status).to.have.all.keys(\"statusCode\", \"requestId\", \"message\");",
+							"});",
+							"",
+							"",
+							"",
+							"// Negative Tests (Ensure Expected Errors are Handled Properly)",
+							"",
+							"// Unauthorized Access (403)",
+							"pm.test(\"Unauthorized access should return 403 with correct message\", function () {",
+							"    if (pm.response.code === 403) {",
+							"        var jsonData = pm.response.json();",
+							"        pm.expect(jsonData).to.have.property(\"message\");",
+							"        pm.expect(jsonData.message).to.include(\"not authorized\");",
+							"    }",
+							"});",
+							"",
+							"// Invalid Authentication (401)",
+							"pm.test(\"Invalid authentication should return 401\", function () {",
+							"    if (pm.response.code === 401) {",
+							"        pm.expect(pm.response.code).to.equal(401);",
+							"    }",
+							"});",
+							"",
+							"// Missing Required Fields (400)",
+							"pm.test(\"Missing required fields should return 400 with correct message\", function () {",
+							"    if (pm.response.code === 400) {",
+							"        var jsonData = pm.response.json();",
+							"        pm.expect(jsonData).to.have.property(\"message\");",
+							"        pm.expect(jsonData.message).to.include(\"missing required\");",
+							"    }",
+							"});",
+							"",
+							"// Invalid Data Format (400)",
+							"pm.test(\"Invalid data format should return 400 with appropriate message\", function () {",
+							"    if (pm.response.code === 400) {",
+							"        var jsonData = pm.response.json();",
+							"        pm.expect(jsonData).to.have.property(\"message\");",
+							"        pm.expect(jsonData.message).to.include(\"Invalid format\");",
+							"    }",
+							"});",
+							"",
+							"// Non-existent Resource (404)",
+							"pm.test(\"Non-existent resource should return 404 with correct message\", function () {",
+							"    if (pm.response.code === 404) {",
+							"        var jsonData = pm.response.json();",
+							"        pm.expect(jsonData).to.have.property(\"message\");",
+							"        pm.expect(jsonData.message).to.include(\"not found\");",
+							"    }",
+							"});",
+							"",
+							"// Server Error (500)",
+							"pm.test(\"Server error should return 500 with appropriate message\", function () {",
+							"    if (pm.response.code === 500) {",
+							"        var jsonData = pm.response.json();",
+							"        pm.expect(jsonData).to.have.property(\"message\");",
+							"        pm.expect(jsonData.message).to.include(\"internal server error\");",
+							"    }",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"id": "37171695-f8f324ec-0d90-4418-8e4a-5a5b96d988ce",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{auth-token}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base-url}}/customer-list/v1/account-list/save-export-popup",
+					"host": [
+						"{{base-url}}"
+					],
+					"path": [
+						"customer-list",
+						"v1",
+						"account-list",
+						"save-export-popup"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "account-revoke-share-access",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "e39f5ef9-d2b5-4ff2-ae0f-f447e6ebabd0",
+						"exec": [
+							"pm.test(\"Response time is within 50ms\", function () {",
+							"    pm.expect(pm.response.responseTime).to.be.below(50); // Ensuring it is below 190ms",
+							"});",
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"Response body is valid JSON\", function () {",
+							"    pm.response.to.be.json;",
+							"});",
+							"",
+							"pm.test(\"Verify status object exists and contains expected values\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    ",
+							"    pm.expect(jsonData).to.have.property(\"status\");",
+							"    pm.expect(jsonData.status).to.have.property(\"statusCode\", 200);",
+							"    pm.expect(jsonData.status).to.have.property(\"requestId\").that.is.a(\"string\").and.not.empty;",
+							"    pm.expect(jsonData.status).to.have.property(\"message\", \"Success\");",
+							"});",
+							"",
+							"",
+							"// Negative Tests (Ensure Expected Errors are Handled Properly)",
+							"",
+							"// Unauthorized Access (403)",
+							"pm.test(\"Unauthorized access should return 403 with correct message\", function () {",
+							"    if (pm.response.code === 403) {",
+							"        var jsonData = pm.response.json();",
+							"        pm.expect(jsonData).to.have.property(\"message\");",
+							"        pm.expect(jsonData.message).to.include(\"not authorized\");",
+							"    }",
+							"});",
+							"",
+							"// Invalid Authentication (401)",
+							"pm.test(\"Invalid authentication should return 401\", function () {",
+							"    if (pm.response.code === 401) {",
+							"        pm.expect(pm.response.code).to.equal(401);",
+							"    }",
+							"});",
+							"",
+							"// Missing Required Fields (400)",
+							"pm.test(\"Missing required fields should return 400 with correct message\", function () {",
+							"    if (pm.response.code === 400) {",
+							"        var jsonData = pm.response.json();",
+							"        pm.expect(jsonData).to.have.property(\"message\");",
+							"        pm.expect(jsonData.message).to.include(\"missing required\");",
+							"    }",
+							"});",
+							"",
+							"// Invalid Data Format (400)",
+							"pm.test(\"Invalid data format should return 400 with appropriate message\", function () {",
+							"    if (pm.response.code === 400) {",
+							"        var jsonData = pm.response.json();",
+							"        pm.expect(jsonData).to.have.property(\"message\");",
+							"        pm.expect(jsonData.message).to.include(\"Invalid format\");",
+							"    }",
+							"});",
+							"",
+							"// Non-existent Resource (404)",
+							"pm.test(\"Non-existent resource should return 404 with correct message\", function () {",
+							"    if (pm.response.code === 404) {",
+							"        var jsonData = pm.response.json();",
+							"        pm.expect(jsonData).to.have.property(\"message\");",
+							"        pm.expect(jsonData.message).to.include(\"not found\");",
+							"    }",
+							"});",
+							"",
+							"// Server Error (500)",
+							"pm.test(\"Server error should return 500 with appropriate message\", function () {",
+							"    if (pm.response.code === 500) {",
+							"        var jsonData = pm.response.json();",
+							"        pm.expect(jsonData).to.have.property(\"message\");",
+							"        pm.expect(jsonData.message).to.include(\"internal server error\");",
+							"    }",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"id": "37171695-56913065-a522-4008-9f0e-8557e5b52037",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{auth-token}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"data\":{\"listId\":662,\"publicRevoked\":true,\"users\":[116]}}\r\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base-url}}/customer-list/v1/account-list/account-revoke-share-access",
+					"host": [
+						"{{base-url}}"
+					],
+					"path": [
+						"customer-list",
+						"v1",
+						"account-list",
+						"account-revoke-share-access"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "account",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "66d8860e-cfd1-475d-bf3f-ad9ee7b87da1",
+						"exec": [
+							"pm.test(\"Response time is within 50ms\", function () {\r",
+							"    pm.expect(pm.response.responseTime).to.be.below(50); // Ensuring it is below 190ms\r",
+							"});\r",
+							"// Check if the response status code is 200\r",
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"// Check if response body is in JSON format\r",
+							"pm.test(\"Response body is valid JSON\", function () {\r",
+							"    pm.response.to.be.json;\r",
+							"});\r",
+							"\r",
+							"// Parse response body\r",
+							"var jsonData = pm.response.json();\r",
+							"\r",
+							"// Validate the structure of the response\r",
+							"pm.test(\"Verify response structure\", function () {\r",
+							"    pm.expect(jsonData).to.have.property(\"status\");\r",
+							"    pm.expect(jsonData.status).to.have.property(\"statusCode\", 200);\r",
+							"    pm.expect(jsonData.status).to.have.property(\"requestId\").that.is.a(\"string\").and.not.empty;\r",
+							"    pm.expect(jsonData.status).to.have.property(\"message\", \"Success\");\r",
+							"});\r",
+							"\r",
+							"// Validate data object exists in the response\r",
+							"pm.test(\"Verify data object exists\", function () {\r",
+							"    pm.expect(jsonData).to.have.property(\"data\");\r",
+							"    pm.expect(jsonData.data).to.be.an(\"object\"); // Assuming data should be an object\r",
+							"});\r",
+							"\r",
+							"// Validate accountListId is correct in the response\r",
+							"pm.test(\"Verify accountListId in response\", function () {\r",
+							"    pm.expect(jsonData.data).to.have.property(\"accountListId\", 41);\r",
+							"});\r",
+							"// Negative Tests (Ensure Expected Errors are Handled Properly)\r",
+							"\r",
+							"// Unauthorized Access (403)\r",
+							"pm.test(\"Unauthorized access should return 403 with correct message\", function () {\r",
+							"    if (pm.response.code === 403) {\r",
+							"        var jsonData = pm.response.json();\r",
+							"        pm.expect(jsonData).to.have.property(\"message\");\r",
+							"        pm.expect(jsonData.message).to.include(\"not authorized\");\r",
+							"    }\r",
+							"});\r",
+							"\r",
+							"// Invalid Authentication (401)\r",
+							"pm.test(\"Invalid authentication should return 401\", function () {\r",
+							"    if (pm.response.code === 401) {\r",
+							"        pm.expect(pm.response.code).to.equal(401);\r",
+							"    }\r",
+							"});\r",
+							"\r",
+							"// Missing Required Fields (400)\r",
+							"pm.test(\"Missing required fields should return 400 with correct message\", function () {\r",
+							"    if (pm.response.code === 400) {\r",
+							"        var jsonData = pm.response.json();\r",
+							"        pm.expect(jsonData).to.have.property(\"message\");\r",
+							"        pm.expect(jsonData.message).to.include(\"missing required\");\r",
+							"    }\r",
+							"});\r",
+							"\r",
+							"// Invalid Data Format (400)\r",
+							"pm.test(\"Invalid data format should return 400 with appropriate message\", function () {\r",
+							"    if (pm.response.code === 400) {\r",
+							"        var jsonData = pm.response.json();\r",
+							"        pm.expect(jsonData).to.have.property(\"message\");\r",
+							"        pm.expect(jsonData.message).to.include(\"Invalid format\");\r",
+							"    }\r",
+							"});\r",
+							"\r",
+							"// Non-existent Resource (404)\r",
+							"pm.test(\"Non-existent resource should return 404 with correct message\", function () {\r",
+							"    if (pm.response.code === 404) {\r",
+							"        var jsonData = pm.response.json();\r",
+							"        pm.expect(jsonData).to.have.property(\"message\");\r",
+							"        pm.expect(jsonData.message).to.include(\"not found\");\r",
+							"    }\r",
+							"});\r",
+							"\r",
+							"// Server Error (500)\r",
+							"pm.test(\"Server error should return 500 with appropriate message\", function () {\r",
+							"    if (pm.response.code === 500) {\r",
+							"        var jsonData = pm.response.json();\r",
+							"        pm.expect(jsonData).to.have.property(\"message\");\r",
+							"        pm.expect(jsonData.message).to.include(\"internal server error\");\r",
+							"    }\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"id": "37171695-5bb58244-443c-4082-ae17-b4e5a9274fe7",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{auth-token}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"data\": {\r\n        \"accountListId\": 1035\r\n    }\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base-url}}/customer-list/v1/account-list/account",
+					"host": [
+						"{{base-url}}"
+					],
+					"path": [
+						"customer-list",
+						"v1",
+						"account-list",
+						"account"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "account-upload-temp",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "cab8a70e-cc14-40ba-83a0-3a2ad67a257d",
+						"exec": [
+							"pm.test(\"Response time is within 50ms\", function () {\r",
+							"    pm.expect(pm.response.responseTime).to.be.below(50); // Ensuring it is below 190ms\r",
+							"});\r",
+							"// Check if the response status code is 200\r",
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"// Check if response body is in JSON format\r",
+							"pm.test(\"Response body is valid JSON\", function () {\r",
+							"    pm.response.to.be.json;\r",
+							"});\r",
+							"\r",
+							"// Parse response body\r",
+							"var jsonData = pm.response.json();\r",
+							"\r",
+							"// Validate the structure of the response\r",
+							"pm.test(\"Verify response structure\", function () {\r",
+							"    pm.expect(jsonData).to.have.property(\"status\");\r",
+							"    pm.expect(jsonData.status).to.have.property(\"statusCode\", 200);\r",
+							"    pm.expect(jsonData.status).to.have.property(\"requestId\").that.is.a(\"string\").and.not.empty;\r",
+							"    pm.expect(jsonData.status).to.have.property(\"message\", \"Success\");\r",
+							"});\r",
+							"\r",
+							"// Validate the 'data' object structure\r",
+							"pm.test(\"Verify data object exists\", function () {\r",
+							"    pm.expect(jsonData).to.have.property(\"data\");\r",
+							"    pm.expect(jsonData.data).to.have.property(\"accountCount\").that.is.a(\"number\");\r",
+							"    pm.expect(jsonData.data).to.have.property(\"uploadData\").that.is.an(\"array\");\r",
+							"});\r",
+							"\r",
+							"// Validate that the uploadData contains expected structure\r",
+							"pm.test(\"Verify uploadData contains correct structure\", function () {\r",
+							"    var uploadData = jsonData.data.uploadData;\r",
+							"    \r",
+							"    uploadData.forEach(function(sheet) {\r",
+							"        pm.expect(sheet).to.have.property(\"sheetName\").that.is.a(\"string\");\r",
+							"        pm.expect(sheet).to.have.property(\"data\").that.is.an(\"array\");\r",
+							"        pm.expect(sheet).to.have.property(\"columns\").that.is.a(\"number\");\r",
+							"        pm.expect(sheet).to.have.property(\"rows\").that.is.a(\"number\");\r",
+							"    });\r",
+							"});\r",
+							"\r",
+							"// Validate the file details (size and filenames)\r",
+							"pm.test(\"Verify file details\", function () {\r",
+							"    var uploadData = jsonData.data.uploadData[1];\r",
+							"    \r",
+							"    pm.expect(uploadData).to.have.property(\"fileSize\").that.is.a(\"number\");\r",
+							"    pm.expect(uploadData).to.have.property(\"newFileName\").that.is.a(\"string\");\r",
+							"    pm.expect(uploadData).to.have.property(\"oldFileName\").that.is.a(\"string\");\r",
+							"});\r",
+							"// Negative Tests (Ensure Expected Errors are Handled Properly)\r",
+							"\r",
+							"// Unauthorized Access (403)\r",
+							"pm.test(\"Unauthorized access should return 403 with correct message\", function () {\r",
+							"    if (pm.response.code === 403) {\r",
+							"        var jsonData = pm.response.json();\r",
+							"        pm.expect(jsonData).to.have.property(\"message\");\r",
+							"        pm.expect(jsonData.message).to.include(\"not authorized\");\r",
+							"    }\r",
+							"});\r",
+							"\r",
+							"// Invalid Authentication (401)\r",
+							"pm.test(\"Invalid authentication should return 401\", function () {\r",
+							"    if (pm.response.code === 401) {\r",
+							"        pm.expect(pm.response.code).to.equal(401);\r",
+							"    }\r",
+							"});\r",
+							"\r",
+							"// Missing Required Fields (400)\r",
+							"pm.test(\"Missing required fields should return 400 with correct message\", function () {\r",
+							"    if (pm.response.code === 400) {\r",
+							"        var jsonData = pm.response.json();\r",
+							"        pm.expect(jsonData).to.have.property(\"message\");\r",
+							"        pm.expect(jsonData.message).to.include(\"missing required\");\r",
+							"    }\r",
+							"});\r",
+							"\r",
+							"// Invalid Data Format (400)\r",
+							"pm.test(\"Invalid data format should return 400 with appropriate message\", function () {\r",
+							"    if (pm.response.code === 400) {\r",
+							"        var jsonData = pm.response.json();\r",
+							"        pm.expect(jsonData).to.have.property(\"message\");\r",
+							"        pm.expect(jsonData.message).to.include(\"Invalid format\");\r",
+							"    }\r",
+							"});\r",
+							"\r",
+							"// Non-existent Resource (404)\r",
+							"pm.test(\"Non-existent resource should return 404 with correct message\", function () {\r",
+							"    if (pm.response.code === 404) {\r",
+							"        var jsonData = pm.response.json();\r",
+							"        pm.expect(jsonData).to.have.property(\"message\");\r",
+							"        pm.expect(jsonData.message).to.include(\"not found\");\r",
+							"    }\r",
+							"});\r",
+							"\r",
+							"// Server Error (500)\r",
+							"pm.test(\"Server error should return 500 with appropriate message\", function () {\r",
+							"    if (pm.response.code === 500) {\r",
+							"        var jsonData = pm.response.json();\r",
+							"        pm.expect(jsonData).to.have.property(\"message\");\r",
+							"        pm.expect(jsonData.message).to.include(\"internal server error\");\r",
+							"    }\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"id": "37171695-0d22bba1-c2eb-4a8a-9240-1abe49c700a0",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{auth-token}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "file",
+							"type": "file",
+							"uuid": "58a8f365-b4c1-46d0-b30b-2c3e358ace14",
+							"src": "/C:/Users/Mitali.Lohar/Downloads/Account-Sample-File (1).csv"
+						}
+					]
+				},
+				"url": {
+					"raw": "{{base-url}}/customer-list/v1/account-list/account-upload-temp",
+					"host": [
+						"{{base-url}}"
+					],
+					"path": [
+						"customer-list",
+						"v1",
+						"account-list",
+						"account-upload-temp"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "account-list-dashboard",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "b8b87df7-8c5d-4f58-9b64-bec536dccc7d",
+						"exec": [
+							"pm.test(\"Response time is within 50ms\", function () {\r",
+							"    pm.expect(pm.response.responseTime).to.be.below(50); // Ensuring it is below 190ms\r",
+							"});\r",
+							"// Check if the response status code is 200\r",
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"// Check if response body is in JSON format\r",
+							"pm.test(\"Response body is valid JSON\", function () {\r",
+							"    pm.response.to.be.json;\r",
+							"});\r",
+							"\r",
+							"// Parse response body\r",
+							"var jsonData = pm.response.json();\r",
+							"\r",
+							"// Validate the structure of the response\r",
+							"pm.test(\"Verify response structure\", function () {\r",
+							"    pm.expect(jsonData).to.have.property(\"status\");\r",
+							"    pm.expect(jsonData.status).to.have.property(\"statusCode\", 200);\r",
+							"    pm.expect(jsonData.status).to.have.property(\"requestId\").that.is.a(\"string\").and.not.empty;\r",
+							"    pm.expect(jsonData.status).to.have.property(\"message\", \"Success\");\r",
+							"});\r",
+							"\r",
+							"// Validate data object exists and is an array\r",
+							"pm.test(\"Verify data object exists and is an array\", function () {\r",
+							"    pm.expect(jsonData).to.have.property(\"data\");\r",
+							"    pm.expect(jsonData.data).to.be.an(\"array\");\r",
+							"});\r",
+							"\r",
+							"// Validate each item in the data array\r",
+							"pm.test(\"Verify items in data array\", function () {\r",
+							"    jsonData.data.forEach(function(item) {\r",
+							"        pm.expect(item).to.have.property(\"id\").that.is.a(\"number\");\r",
+							"        pm.expect(item).to.have.property(\"accountId\").that.is.a(\"number\");\r",
+							"        pm.expect(item).to.have.property(\"userId\").that.is.a(\"number\");\r",
+							"        pm.expect(item).to.have.property(\"listName\").that.is.a(\"string\");\r",
+							"        pm.expect(item).to.have.property(\"status\").that.is.a(\"string\");\r",
+							"        pm.expect(item).to.have.property(\"recordCount\").that.is.a(\"number\");\r",
+							"        pm.expect(item).to.have.property(\"isPublic\").that.is.a(\"boolean\");\r",
+							"        pm.expect(item).to.have.property(\"updateDate\").that.is.a(\"string\"); // Assuming it's in ISO 8601 format\r",
+							"    });\r",
+							"});\r",
+							"// Negative Tests (Ensure Expected Errors are Handled Properly)\r",
+							"\r",
+							"// Unauthorized Access (403)\r",
+							"pm.test(\"Unauthorized access should return 403 with correct message\", function () {\r",
+							"    if (pm.response.code === 403) {\r",
+							"        var jsonData = pm.response.json();\r",
+							"        pm.expect(jsonData).to.have.property(\"message\");\r",
+							"        pm.expect(jsonData.message).to.include(\"not authorized\");\r",
+							"    }\r",
+							"});\r",
+							"\r",
+							"// Invalid Authentication (401)\r",
+							"pm.test(\"Invalid authentication should return 401\", function () {\r",
+							"    if (pm.response.code === 401) {\r",
+							"        pm.expect(pm.response.code).to.equal(401);\r",
+							"    }\r",
+							"});\r",
+							"\r",
+							"// Missing Required Fields (400)\r",
+							"pm.test(\"Missing required fields should return 400 with correct message\", function () {\r",
+							"    if (pm.response.code === 400) {\r",
+							"        var jsonData = pm.response.json();\r",
+							"        pm.expect(jsonData).to.have.property(\"message\");\r",
+							"        pm.expect(jsonData.message).to.include(\"missing required\");\r",
+							"    }\r",
+							"});\r",
+							"\r",
+							"// Invalid Data Format (400)\r",
+							"pm.test(\"Invalid data format should return 400 with appropriate message\", function () {\r",
+							"    if (pm.response.code === 400) {\r",
+							"        var jsonData = pm.response.json();\r",
+							"        pm.expect(jsonData).to.have.property(\"message\");\r",
+							"        pm.expect(jsonData.message).to.include(\"Invalid format\");\r",
+							"    }\r",
+							"});\r",
+							"\r",
+							"// Non-existent Resource (404)\r",
+							"pm.test(\"Non-existent resource should return 404 with correct message\", function () {\r",
+							"    if (pm.response.code === 404) {\r",
+							"        var jsonData = pm.response.json();\r",
+							"        pm.expect(jsonData).to.have.property(\"message\");\r",
+							"        pm.expect(jsonData.message).to.include(\"not found\");\r",
+							"    }\r",
+							"});\r",
+							"\r",
+							"// Server Error (500)\r",
+							"pm.test(\"Server error should return 500 with appropriate message\", function () {\r",
+							"    if (pm.response.code === 500) {\r",
+							"        var jsonData = pm.response.json();\r",
+							"        pm.expect(jsonData).to.have.property(\"message\");\r",
+							"        pm.expect(jsonData.message).to.include(\"internal server error\");\r",
+							"    }\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"id": "37171695-626ef907-8cac-4a5b-895e-46ace3dd02a1",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{auth-token}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{    \"type\": \"dashboard\"}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base-url}}/customer-list/v1/account-list/account-list-dashboard",
+					"host": [
+						"{{base-url}}"
+					],
+					"path": [
+						"customer-list",
+						"v1",
+						"account-list",
+						"account-list-dashboard"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "validate-account-name",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "8be2ef43-791e-40b3-be71-3f59b5854c62",
+						"exec": [
+							"pm.test(\"Response time is within 50ms\", function () {\r",
+							"    pm.expect(pm.response.responseTime).to.be.below(50); // Ensuring it is below 190ms\r",
+							"});\r",
+							"// Check if the response status code is 200\r",
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"// Check if response body is in JSON format\r",
+							"pm.test(\"Response body is valid JSON\", function () {\r",
+							"    pm.response.to.be.json;\r",
+							"});\r",
+							"\r",
+							"// Parse response body\r",
+							"var jsonData = pm.response.json();\r",
+							"\r",
+							"// Validate the structure of the response\r",
+							"pm.test(\"Verify response structure\", function () {\r",
+							"    pm.expect(jsonData).to.have.property(\"status\");\r",
+							"    pm.expect(jsonData.status).to.have.property(\"statusCode\", 200);\r",
+							"    pm.expect(jsonData.status).to.have.property(\"requestId\").that.is.a(\"string\").and.not.empty;\r",
+							"    pm.expect(jsonData.status).to.have.property(\"message\", \"Success\");\r",
+							"});\r",
+							"\r",
+							"// Validate that the data object is a boolean (true)\r",
+							"pm.test(\"Verify data is true\", function () {\r",
+							"    pm.expect(jsonData).to.have.property(\"data\", true);\r",
+							"});\r",
+							"// Negative Tests (Ensure Expected Errors are Handled Properly)\r",
+							"\r",
+							"// Unauthorized Access (403)\r",
+							"pm.test(\"Unauthorized access should return 403 with correct message\", function () {\r",
+							"    if (pm.response.code === 403) {\r",
+							"        var jsonData = pm.response.json();\r",
+							"        pm.expect(jsonData).to.have.property(\"message\");\r",
+							"        pm.expect(jsonData.message).to.include(\"not authorized\");\r",
+							"    }\r",
+							"});\r",
+							"\r",
+							"// Invalid Authentication (401)\r",
+							"pm.test(\"Invalid authentication should return 401\", function () {\r",
+							"    if (pm.response.code === 401) {\r",
+							"        pm.expect(pm.response.code).to.equal(401);\r",
+							"    }\r",
+							"});\r",
+							"\r",
+							"// Missing Required Fields (400)\r",
+							"pm.test(\"Missing required fields should return 400 with correct message\", function () {\r",
+							"    if (pm.response.code === 400) {\r",
+							"        var jsonData = pm.response.json();\r",
+							"        pm.expect(jsonData).to.have.property(\"message\");\r",
+							"        pm.expect(jsonData.message).to.include(\"missing required\");\r",
+							"    }\r",
+							"});\r",
+							"\r",
+							"// Invalid Data Format (400)\r",
+							"pm.test(\"Invalid data format should return 400 with appropriate message\", function () {\r",
+							"    if (pm.response.code === 400) {\r",
+							"        var jsonData = pm.response.json();\r",
+							"        pm.expect(jsonData).to.have.property(\"message\");\r",
+							"        pm.expect(jsonData.message).to.include(\"Invalid format\");\r",
+							"    }\r",
+							"});\r",
+							"\r",
+							"// Non-existent Resource (404)\r",
+							"pm.test(\"Non-existent resource should return 404 with correct message\", function () {\r",
+							"    if (pm.response.code === 404) {\r",
+							"        var jsonData = pm.response.json();\r",
+							"        pm.expect(jsonData).to.have.property(\"message\");\r",
+							"        pm.expect(jsonData.message).to.include(\"not found\");\r",
+							"    }\r",
+							"});\r",
+							"\r",
+							"// Server Error (500)\r",
+							"pm.test(\"Server error should return 500 with appropriate message\", function () {\r",
+							"    if (pm.response.code === 500) {\r",
+							"        var jsonData = pm.response.json();\r",
+							"        pm.expect(jsonData).to.have.property(\"message\");\r",
+							"        pm.expect(jsonData.message).to.include(\"internal server error\");\r",
+							"    }\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"id": "37171695-1ac31d75-a7a9-4626-ac78-9145f1a0450b",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{auth-token}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"data\": {\r\n        \"listName\": \"monday\"\r\n    }\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base-url}}/customer-list/v1/account-list/validate-account-name",
+					"host": [
+						"{{base-url}}"
+					],
+					"path": [
+						"customer-list",
+						"v1",
+						"account-list",
+						"validate-account-name"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "validate-lead-name",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "9cafcda7-2c2c-4e5d-845f-fafc38602fe1",
+						"exec": [
+							"pm.test(\"Response time is within 50ms\", function () {\r",
+							"    pm.expect(pm.response.responseTime).to.be.below(50); // Ensuring it is below 190ms\r",
+							"});\r",
+							"// Check if the response status code is 200\r",
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"// Check if response body is in JSON format\r",
+							"pm.test(\"Response body is valid JSON\", function () {\r",
+							"    pm.response.to.be.json;\r",
+							"});\r",
+							"\r",
+							"// Parse response body\r",
+							"var jsonData = pm.response.json();\r",
+							"\r",
+							"// Validate the structure of the response\r",
+							"pm.test(\"Verify response structure\", function () {\r",
+							"    pm.expect(jsonData).to.have.property(\"status\");\r",
+							"    pm.expect(jsonData.status).to.have.property(\"statusCode\", 200);\r",
+							"    pm.expect(jsonData.status).to.have.property(\"requestId\").that.is.a(\"string\").and.not.empty;\r",
+							"    pm.expect(jsonData.status).to.have.property(\"message\", \"Success\");\r",
+							"});\r",
+							"\r",
+							"// Validate that the data object is true\r",
+							"pm.test(\"Verify data is true\", function () {\r",
+							"    pm.expect(jsonData).to.have.property(\"data\", true);\r",
+							"});\r",
+							"// Negative Tests (Ensure Expected Errors are Handled Properly)\r",
+							"\r",
+							"// Unauthorized Access (403)\r",
+							"pm.test(\"Unauthorized access should return 403 with correct message\", function () {\r",
+							"    if (pm.response.code === 403) {\r",
+							"        var jsonData = pm.response.json();\r",
+							"        pm.expect(jsonData).to.have.property(\"message\");\r",
+							"        pm.expect(jsonData.message).to.include(\"not authorized\");\r",
+							"    }\r",
+							"});\r",
+							"\r",
+							"// Invalid Authentication (401)\r",
+							"pm.test(\"Invalid authentication should return 401\", function () {\r",
+							"    if (pm.response.code === 401) {\r",
+							"        pm.expect(pm.response.code).to.equal(401);\r",
+							"    }\r",
+							"});\r",
+							"\r",
+							"// Missing Required Fields (400)\r",
+							"pm.test(\"Missing required fields should return 400 with correct message\", function () {\r",
+							"    if (pm.response.code === 400) {\r",
+							"        var jsonData = pm.response.json();\r",
+							"        pm.expect(jsonData).to.have.property(\"message\");\r",
+							"        pm.expect(jsonData.message).to.include(\"missing required\");\r",
+							"    }\r",
+							"});\r",
+							"\r",
+							"// Invalid Data Format (400)\r",
+							"pm.test(\"Invalid data format should return 400 with appropriate message\", function () {\r",
+							"    if (pm.response.code === 400) {\r",
+							"        var jsonData = pm.response.json();\r",
+							"        pm.expect(jsonData).to.have.property(\"message\");\r",
+							"        pm.expect(jsonData.message).to.include(\"Invalid format\");\r",
+							"    }\r",
+							"});\r",
+							"\r",
+							"// Non-existent Resource (404)\r",
+							"pm.test(\"Non-existent resource should return 404 with correct message\", function () {\r",
+							"    if (pm.response.code === 404) {\r",
+							"        var jsonData = pm.response.json();\r",
+							"        pm.expect(jsonData).to.have.property(\"message\");\r",
+							"        pm.expect(jsonData.message).to.include(\"not found\");\r",
+							"    }\r",
+							"});\r",
+							"\r",
+							"// Server Error (500)\r",
+							"pm.test(\"Server error should return 500 with appropriate message\", function () {\r",
+							"    if (pm.response.code === 500) {\r",
+							"        var jsonData = pm.response.json();\r",
+							"        pm.expect(jsonData).to.have.property(\"message\");\r",
+							"        pm.expect(jsonData.message).to.include(\"internal server error\");\r",
+							"    }\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"id": "37171695-09639f4f-fcbb-43af-a262-f196264ce80d",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{auth-token}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"data\": {\r\n        \"listName\": \"rtt\"\r\n    }\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base-url}}/customer-list/v1/lead-list/validate-lead-name",
+					"host": [
+						"{{base-url}}"
+					],
+					"path": [
+						"customer-list",
+						"v1",
+						"lead-list",
+						"validate-lead-name"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "account-upload",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "8ba23715-0cc7-4a1b-9a14-49afb97bc762",
+						"exec": [
+							"pm.test(\"Response time is within 50ms\", function () {\r",
+							"    pm.expect(pm.response.responseTime).to.be.below(50); // Ensuring it is below 190ms\r",
+							"});\r",
+							"// Check if the response status code is 200\r",
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"// Check if response body is in JSON format\r",
+							"pm.test(\"Response body is valid JSON\", function () {\r",
+							"    pm.response.to.be.json;\r",
+							"});\r",
+							"\r",
+							"// Parse response body\r",
+							"var jsonData = pm.response.json();\r",
+							"\r",
+							"// Validate the structure of the response\r",
+							"pm.test(\"Verify response structure\", function () {\r",
+							"    pm.expect(jsonData).to.have.property(\"status\");\r",
+							"    pm.expect(jsonData.status).to.have.property(\"statusCode\", 200);\r",
+							"    pm.expect(jsonData.status).to.have.property(\"requestId\").that.is.a(\"string\").and.not.empty;\r",
+							"    pm.expect(jsonData.status).to.have.property(\"message\", \"Success\");\r",
+							"});\r",
+							"\r",
+							"// Validate that the response data exists and contains the expected fields\r",
+							"pm.test(\"Verify response data exists\", function () {\r",
+							"    pm.expect(jsonData).to.have.property(\"data\");\r",
+							"    pm.expect(jsonData.data).to.be.an(\"object\");\r",
+							"    pm.expect(jsonData.data).to.have.property(\"listName\").that.is.a(\"string\");\r",
+							"    pm.expect(jsonData.data.listName).to.equal(\"ghcghcg\");  // Check if the listName is correct\r",
+							"});\r",
+							"\r",
+							"// If applicable, validate the file upload details (e.g., file name, file size)\r",
+							"pm.test(\"Verify file upload\", function () {\r",
+							"    var uploadData = jsonData.data.uploadData;\r",
+							"    pm.expect(uploadData).to.have.property(\"fileName\").that.is.a(\"string\");\r",
+							"    pm.expect(uploadData).to.have.property(\"fileSize\").that.is.a(\"number\");\r",
+							"});\r",
+							"// Negative Tests (Ensure Expected Errors are Handled Properly)\r",
+							"\r",
+							"// Unauthorized Access (403)\r",
+							"pm.test(\"Unauthorized access should return 403 with correct message\", function () {\r",
+							"    if (pm.response.code === 403) {\r",
+							"        var jsonData = pm.response.json();\r",
+							"        pm.expect(jsonData).to.have.property(\"message\");\r",
+							"        pm.expect(jsonData.message).to.include(\"not authorized\");\r",
+							"    }\r",
+							"});\r",
+							"\r",
+							"// Invalid Authentication (401)\r",
+							"pm.test(\"Invalid authentication should return 401\", function () {\r",
+							"    if (pm.response.code === 401) {\r",
+							"        pm.expect(pm.response.code).to.equal(401);\r",
+							"    }\r",
+							"});\r",
+							"\r",
+							"// Missing Required Fields (400)\r",
+							"pm.test(\"Missing required fields should return 400 with correct message\", function () {\r",
+							"    if (pm.response.code === 400) {\r",
+							"        var jsonData = pm.response.json();\r",
+							"        pm.expect(jsonData).to.have.property(\"message\");\r",
+							"        pm.expect(jsonData.message).to.include(\"missing required\");\r",
+							"    }\r",
+							"});\r",
+							"\r",
+							"// Invalid Data Format (400)\r",
+							"pm.test(\"Invalid data format should return 400 with appropriate message\", function () {\r",
+							"    if (pm.response.code === 400) {\r",
+							"        var jsonData = pm.response.json();\r",
+							"        pm.expect(jsonData).to.have.property(\"message\");\r",
+							"        pm.expect(jsonData.message).to.include(\"Invalid format\");\r",
+							"    }\r",
+							"});\r",
+							"\r",
+							"// Non-existent Resource (404)\r",
+							"pm.test(\"Non-existent resource should return 404 with correct message\", function () {\r",
+							"    if (pm.response.code === 404) {\r",
+							"        var jsonData = pm.response.json();\r",
+							"        pm.expect(jsonData).to.have.property(\"message\");\r",
+							"        pm.expect(jsonData.message).to.include(\"not found\");\r",
+							"    }\r",
+							"});\r",
+							"\r",
+							"// Server Error (500)\r",
+							"pm.test(\"Server error should return 500 with appropriate message\", function () {\r",
+							"    if (pm.response.code === 500) {\r",
+							"        var jsonData = pm.response.json();\r",
+							"        pm.expect(jsonData).to.have.property(\"message\");\r",
+							"        pm.expect(jsonData.message).to.include(\"internal server error\");\r",
+							"    }\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"id": "37171695-651b0d64-95be-447a-b080-420f8a4222d5",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{auth-token}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "file",
+							"type": "file",
+							"uuid": "f9807d0b-ae9f-4a67-8e3f-2ee702ea7dd5",
+							"src": "/C:/Users/Mitali.Lohar/Downloads/Account-Sample-File (1).csv"
+						},
+						{
+							"key": "listName",
+							"value": "accfile 1",
+							"type": "text",
+							"uuid": "0f1f65ab-6a82-49db-9565-065ad82b5c41"
+						},
+						{
+							"key": "fieldMapping",
+							"value": "[{\"name\": \"Account name\", \"mappedBy\": \"Company Name\", \"position\": 0, \"apiFieldName\": null}, {\"name\": \"Website\", \"mappedBy\": \"Company Website\", \"position\": 1, \"apiFieldName\": null}, {\"name\": \"Account Linkedin URL\", \"mappedBy\": \"Company Linkedin Url\", \"position\": 2, \"apiFieldName\": null}]",
+							"type": "text",
+							"uuid": "9ecc4871-b9f9-492e-8084-3a427a511dd5"
+						},
+						{
+							"key": "sheetName",
+							"value": "Sheet1",
+							"type": "text",
+							"uuid": "194c300d-74a2-45e2-bd92-fe5ab02d36a2"
+						}
+					]
+				},
+				"url": {
+					"raw": "{{base-url}}/customer-list/v1/account-list/account-upload",
+					"host": [
+						"{{base-url}}"
+					],
+					"path": [
+						"customer-list",
+						"v1",
+						"account-list",
+						"account-upload"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "lead-upload",
+			"id": "37171695-f87cdc8e-1c13-4ec0-a113-ca73a6e29777",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{auth-token}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "file",
+							"type": "file",
+							"uuid": "60a1abea-53d5-4b3c-9a13-463050c0ac57",
+							"src": "/C:/Users/Mitali.Lohar/Downloads/Acc file comp guid.xlsx"
+						},
+						{
+							"key": "listName",
+							"value": "lead upload",
+							"type": "text",
+							"uuid": "2d34997e-afcf-48ef-899d-76c746ee9826"
+						},
+						{
+							"key": "fieldMapping",
+							"value": "[{\"name\": \"Full Name\", \"mappedBy\": \"Full Name\", \"position\": 0, \"apiFieldName\": null}, {\"name\": \"First Name\", \"mappedBy\": \"First Name\", \"position\": 1, \"apiFieldName\": null}, {\"name\": \"Last Name\", \"mappedBy\": \"Last Name\", \"position\": 2, \"apiFieldName\": null}, {\"name\": \"Account Name\", \"mappedBy\": \"Company Name\", \"position\": 3, \"apiFieldName\": null}, {\"name\": \"Website\", \"mappedBy\": \"Company Website\", \"position\": 4, \"apiFieldName\": null}, {\"name\": \"Email Address\", \"mappedBy\": \"Contact Email\", \"position\": 5, \"apiFieldName\": null}, {\"name\": \"Linkedin URL\", \"mappedBy\": \"Contact Linkedin Url\", \"position\": 6, \"apiFieldName\": null}]",
+							"type": "text",
+							"uuid": "576042c0-9112-4095-aab3-31a743009603"
+						},
+						{
+							"key": "sheetName",
+							"value": "Sheet1",
+							"type": "text",
+							"uuid": "99688550-ed2b-4cb9-9282-a698ddb05dfe"
+						}
+					]
+				},
+				"url": {
+					"raw": "{{base-url}}/customer-list/v1/lead-list/lead-upload",
+					"host": [
+						"{{base-url}}"
+					],
+					"path": [
+						"customer-list",
+						"v1",
+						"lead-list",
+						"lead-upload"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "save-dummy-data",
+			"id": "37171695-c144cae3-029d-4a2d-b2f3-fdc1bb5df81c",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{auth-token}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base-url}}/customer-list/v1/account-list/save-export-popup",
+					"host": [
+						"{{base-url}}"
+					],
+					"path": [
+						"customer-list",
+						"v1",
+						"account-list",
+						"save-export-popup"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
