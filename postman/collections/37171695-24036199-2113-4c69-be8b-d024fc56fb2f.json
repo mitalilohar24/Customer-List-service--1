@@ -392,7 +392,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"data\": {\r\n        \"searchText\": \"Amazon 1\",\r\n        \"contentType\": \"SHARED\"\r\n    },\r\n    \"type\": \"DASHBOARD\",\r\n    \"pagination\": {\r\n        \"pageSize\": 10,\r\n        \"pageIndex\": 3\r\n    }\r\n}",
+					"raw": "{\r\n    \"data\": {\r\n        \"searchText\": \"Assa\",\r\n        \"contentType\": \"SHARED\"\r\n    },\r\n    \"type\": \"DASHBOARD\",\r\n    \"pagination\": {\r\n        \"pageSize\": 10,\r\n        \"pageIndex\": 1\r\n    }\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
